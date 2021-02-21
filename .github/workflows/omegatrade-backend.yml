@@ -1,6 +1,12 @@
 name: publish
 
-on: [push]
+on:
+  push:
+    branches: [ main ]
+
+defaults:
+  run:
+    working-directory: omegatrade-app/backend
 
 jobs:
   build:
