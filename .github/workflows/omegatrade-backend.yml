@@ -50,3 +50,4 @@ jobs:
           --set-env-vars=DATABASE=spanner_database \
           --set-env-vars=JWT_SECRET=abc123 \
           --set-env-vars=EXPIRE_IN=2d
+
