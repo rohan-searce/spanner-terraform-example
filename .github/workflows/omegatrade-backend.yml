@@ -37,6 +37,10 @@ jobs:
         run: |
           docker push gcr.io/searce-academy/omega-trade/dev/backend:latest
       
+      - name: Install Gcloud Beta
+        run: |
+          gcloud components install beta
+          
       - name: Deploy
         run: |
           gcloud beta run services \
