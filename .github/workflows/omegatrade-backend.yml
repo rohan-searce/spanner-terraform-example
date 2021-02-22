@@ -1,4 +1,4 @@
-name: publish
+name: omegatrade-backend-dev
 
 on:
   push:
@@ -40,8 +40,7 @@ jobs:
       - name: Deploy
         run: |
           gcloud components install beta
-          gcloud config set compute/region us-west1 --project=searce-academy
-          gcloud beta run services replace service-dev.yaml
+          gcloud beta run services replace service-dev.yaml --platform=managed --region=us-west1
 
 #       - name: Deploy
 #         run: |
