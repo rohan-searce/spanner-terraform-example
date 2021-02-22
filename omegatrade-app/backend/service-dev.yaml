@@ -1,0 +1,33 @@
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: omegatrade-backend-dev
+spec:
+  template:
+    spec:
+      containerConcurrency: 80
+      timeoutSeconds: 300
+      containers:
+      - image: gcr.io/searce-academy/omega-trade/dev/backend:17
+        ports:
+        - name: http1
+          containerPort: 8080
+        env:
+        - name: PROJECTID
+          value: searce-academy
+        - name: INSTANCE
+          value: spanner_id
+        - name: DATABASE
+          value: spanner_database
+        - name: JWT_SECRET
+          value: abc123
+        - name: EXPIRE_IN
+          value: 2d
+        resources:
+          limits:
+            memory: 256Mi
+            cpu: 1000m
+  traffic:
+  - percent: 100
+    latestRevision: true
+    
