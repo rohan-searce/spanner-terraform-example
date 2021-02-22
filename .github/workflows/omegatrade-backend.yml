@@ -36,18 +36,27 @@ jobs:
       - name: Push
         run: |
           docker push gcr.io/searce-academy/omega-trade/dev/backend:latest
-
+      
       - name: Deploy
         run: |
-          gcloud run deploy omegatrade-backend-dev \
+          gcloud beta run services \
           --region us-west1 \
           --image gcr.io/searce-academy/omega-trade/dev/backend \
           --platform managed \
           --allow-unauthenticated \
-          --project searce-academy \
-          --set-env-vars=PROJECTID=searce-academy \
-          --set-env-vars=INSTANCE=spanner_id \
-          --set-env-vars=DATABASE=spanner_database \
-          --set-env-vars=JWT_SECRET=abc123 \
-          --set-env-vars=EXPIRE_IN=2d
+          replace service-dev.yaml
+
+#       - name: Deploy
+#         run: |
+#           gcloud run deploy omegatrade-backend-dev \
+#           --region us-west1 \
+#           --image gcr.io/searce-academy/omega-trade/dev/backend \
+#           --platform managed \
+#           --allow-unauthenticated \
+#           --project searce-academy \
+#           --set-env-vars=PROJECTID=searce-academy \
+#           --set-env-vars=INSTANCE=spanner_id \
+#           --set-env-vars=DATABASE=spanner_database \
+#           --set-env-vars=JWT_SECRET=abc123 \
+#           --set-env-vars=EXPIRE_IN=2d
 
