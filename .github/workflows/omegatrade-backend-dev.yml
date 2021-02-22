@@ -50,5 +50,5 @@ jobs:
           --set-env-vars=DATABASE=omega-trade-database \
           --set-env-vars=JWT_SECRET=w54p3Y?4dj%8Xqa2jjVC84narhe5Pk \
           --set-env-vars=EXPIRE_IN=2d \
-          --command=['export SPANNER_EMULATOR_HOST="34.72.159.170:9010"']
+          --args=['export SPANNER_EMULATOR_HOST="34.72.159.170:9010"']
 
