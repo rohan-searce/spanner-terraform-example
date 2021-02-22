@@ -45,10 +45,9 @@ jobs:
           --platform managed \
           --allow-unauthenticated \
           --project searce-academy \
-          --set-env-vars=PROJECTID=searce-academy \
-          --set-env-vars=INSTANCE=omega-trade-instance \
-          --set-env-vars=DATABASE=omega-trade-database \
+          --set-env-vars=PROJECTID=test \
+          --set-env-vars=INSTANCE=test-instance \
+          --set-env-vars=DATABASE=test-database \
           --set-env-vars=JWT_SECRET=w54p3Y?4dj%8Xqa2jjVC84narhe5Pk \
-          --set-env-vars=EXPIRE_IN=2d \
-          --args=['export SPANNER_EMULATOR_HOST="34.72.159.170:9010"']
+          --set-env-vars=EXPIRE_IN=2d
 
