@@ -46,8 +46,8 @@ jobs:
           --allow-unauthenticated \
           --project searce-academy \
           --set-env-vars=PROJECTID=searce-academy \
-          --set-env-vars=INSTANCE=spanner_id \
-          --set-env-vars=DATABASE=spanner_database \
-          --set-env-vars=JWT_SECRET=abc123 \
+          --set-env-vars=INSTANCE=omega-trade-instance \
+          --set-env-vars=DATABASE=omega-trade-database \
+          --set-env-vars=JWT_SECRET=w54p3Y?4dj%8Xqa2jjVC84narhe5Pk \
           --set-env-vars=EXPIRE_IN=2d
 
