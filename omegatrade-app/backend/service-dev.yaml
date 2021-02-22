@@ -30,4 +30,4 @@ spec:
   traffic:
   - percent: 100
     latestRevision: true
-    
+  
