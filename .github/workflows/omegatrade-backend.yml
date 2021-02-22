@@ -43,7 +43,7 @@ jobs:
           
       - name: Deploy
         run: |
-          gcloud run services replace service-dev.yaml \
+          gcloud run services update service-dev.yaml \
           --region us-west1 \
           --platform managed \
           --allow-unauthenticated
