@@ -40,7 +40,7 @@ jobs:
       - name: Deploy
         run: |
           gcloud components install beta
-          gcloud beta run services replace service-dev.yaml --platform=managed --region=us-west1
+          gcloud beta run services replace service-dev.yaml --platform=managed --region=us-west1 --project=searce-academy
 
 #       - name: Deploy
 #         run: |
