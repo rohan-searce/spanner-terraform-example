@@ -49,5 +49,5 @@ jobs:
           --set-env-vars=DATABASE=test-database \
           --set-env-vars=JWT_SECRET=w54p3Y?4dj%8Xqa2jjVC84narhe5Pk \
           --set-env-vars=EXPIRE_IN=2d \
-          --set-env-vars=SPANNER_EMULATOR_HOST="localhost:9010"
+          --set-env-vars=SPANNER_EMULATOR_HOST="104.197.149.22:9010"
           
