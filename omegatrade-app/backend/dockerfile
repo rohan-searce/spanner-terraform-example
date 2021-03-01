@@ -11,4 +11,3 @@ RUN chmod u+x gateway_main emulator_main
 RUN ./gateway_main --hostname localhost --grpc_port 9010 --http_port 9020 &
 
 CMD [ "npm", "start" ]
- 
