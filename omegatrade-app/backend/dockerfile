@@ -1,5 +1,4 @@
 FROM node:10.16.3
-FROM gcr.io/cloud-spanner-emulator/emulator
 WORKDIR /usr/src/app
 COPY package*.json ./
 RUN npm install
@@ -7,3 +6,5 @@ COPY . ./
 RUN export SPANNER_EMULATOR_HOST=localhost:9010
 
 CMD [ "npm", "start" ]
+
+FROM gcr.io/cloud-spanner-emulator/emulator
