@@ -1,13 +1,9 @@
 FROM node:10.16.3
+FROM gcr.io/cloud-spanner-emulator/emulator
 WORKDIR /usr/src/app
 COPY package*.json ./
 RUN npm install
 COPY . ./
 RUN export SPANNER_EMULATOR_HOST=localhost:9010
-
-RUN wget https://storage.googleapis.com/cloud-spanner-emulator/releases/1.2.0/cloud-spanner-emulator_linux_amd64-1.2.0.tar.gz
-RUN tar zxvf cloud-spanner-emulator_linux_amd64-1.2.0.tar.gz
-RUN chmod u+x gateway_main emulator_main
-RUN ./gateway_main --hostname localhost --grpc_port 9010 --http_port 9020 &
 
 CMD [ "npm", "start" ]
