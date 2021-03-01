@@ -8,3 +8,7 @@ RUN export SPANNER_EMULATOR_HOST=localhost:9010
 CMD [ "npm", "start" ]
 
 FROM gcr.io/cloud-spanner-emulator/emulator
+RUN gcloud config configurations create emulator-docker
+RUN gcloud config set api_endpoint_overrides/spanner http://0.0.0.0:9020/
+RUN gcloud config set auth/disable_credentials true
+RUN gcloud config set core/project searce-academy
