@@ -3,6 +3,6 @@ WORKDIR /usr/src/app
 COPY package*.json ./
 RUN npm install
 COPY . ./
-RUN export SPANNER_EMULATOR_HOST=localhost:9020
+RUN export SPANNER_EMULATOR_HOST=localhost:9010
 CMD [ "npm", "start" ]
  
