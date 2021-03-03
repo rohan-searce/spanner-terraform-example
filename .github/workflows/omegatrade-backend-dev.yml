@@ -43,10 +43,5 @@ jobs:
           --image gcr.io/searce-academy/omega-trade/dev/backend \
           --platform managed \
           --allow-unauthenticated \
-          --project searce-academy \
-          --set-env-vars=PROJECTID=searce-academy \
-          --set-env-vars=INSTANCE=test-instance \
-          --set-env-vars=DATABASE=test-database \
-          --set-env-vars=JWT_SECRET=w54p3Y?4dj%8Xqa2jjVC84narhe5Pk \
-          --set-env-vars=EXPIRE_IN=2d
+          --project searce-academy
           
