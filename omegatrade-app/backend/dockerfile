@@ -11,11 +11,10 @@ RUN ./gateway_main --hostname localhost --grpc_port 9010 --http_port 9020 &
 # escape="
 FROM google/cloud-sdk
 RUN gcloud config configurations create emulator-docker \
-  && gcloud config configurations list \
-  && gcloud config configurations activate emulator-docker \
+  && gcloud config set api_endpoint_overrides/spanner http://0.0.0.0:9020/ \
   && gcloud config set auth/disable_credentials true \
   && gcloud config set project searce-academy \
-  && gcloud config set api_endpoint_overrides/spanner http://localhost:9020/ \
+  && gcloud config configurations list \
   && gcloud spanner instances create test-instance --config=emulator-config --description="Test Instance" --nodes=1 \
   && gcloud spanner databases create test-database --instance=test-instance
 
