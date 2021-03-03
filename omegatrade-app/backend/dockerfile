@@ -1,27 +1,7 @@
-FROM ubuntu
-RUN  apt-get update \
-  && apt-get install -y wget \
-  && rm -rf /var/lib/apt/lists/*
-RUN wget https://storage.googleapis.com/cloud-spanner-emulator/releases/1.2.0/cloud-spanner-emulator_linux_amd64-1.2.0.tar.gz
-RUN tar zxvf cloud-spanner-emulator_linux_amd64-1.2.0.tar.gz
-RUN chmod u+x gateway_main emulator_main
-RUN ./emulator_main --host_port localhost:9010 &
-RUN ./gateway_main --hostname localhost --grpc_port 9010 --http_port 9020 &
-
-# escape="
-
-FROM google/cloud-sdk
-RUN gcloud config configurations create emulator-docker
-RUN gcloud config set api_endpoint_overrides/spanner http://0.0.0.0:9020/
-RUN gcloud config set auth/disable_credentials true
-RUN gcloud config set core/project searce-academy
-RUN gcloud spanner instances create test-instance --config=emulator-config --description="Test Instance" --nodes=1 --project=searce-academy
-RUN gcloud spanner databases create test-database --instance=test-instance
-
 FROM node:10.16.3
 WORKDIR /usr/src/app
 COPY package*.json ./
 RUN npm install
 COPY . ./
-RUN export SPANNER_EMULATOR_HOST=localhost:9010
+RUN export SPANNER_EMULATOR_HOST=emulator-remote-i3nfvlaq3a-uw.a.run.app:9020
 CMD [ "npm", "start" ]
