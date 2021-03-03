@@ -129,7 +129,7 @@ spec:
                 container('gcloud'){
                     sh 'kubectl version'
                     sh 'gcloud auth activate-service-account --key-file=/secret/kaniko-secret.json'
-                    sh 'gcloud run deploy omegatrade-backend-dev-jenkins --image=gcr.io/searce-academy/omega-trade/dev/backend:$BUILD_NUMBER --platform=managed --region=us-west1 --allow-unauthenticated --project=searce-academy --set-env-vars=PROJECTID=searce-academy --set-env-vars=INSTANCE=test-instance --set-env-vars=DATABASE=test-database --set-env-vars=JWT_SECRET=abc123 --set-env-vars=EXPIRE_IN=2d'
+                    sh 'gcloud run deploy omegatrade-backend-dev-jenkins --image=gcr.io/searce-academy/omega-trade/dev/backend:$BUILD_NUMBER --platform=managed --region=us-west1 --allow-unauthenticated --project=searce-academy'
                 }
             }
         }
