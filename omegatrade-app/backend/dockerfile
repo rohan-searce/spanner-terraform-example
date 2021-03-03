@@ -11,7 +11,7 @@ RUN ./gateway_main --hostname localhost --grpc_port 9010 --http_port 9020 &
 # escape="
 FROM google/cloud-sdk
 RUN gcloud config configurations create emulator-docker \
-  && gcloud config set api_endpoint_overrides/spanner http://0.0.0.0:9020/ \
+  && gcloud config set api_endpoint_overrides/spanner http://127.0.0.1:9020/ \
   && gcloud config set auth/disable_credentials true \
   && gcloud config set project test-project \
   && gcloud config configurations list \
