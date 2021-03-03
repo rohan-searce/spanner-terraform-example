@@ -14,6 +14,7 @@ RUN gcloud config configurations create emulator-docker
 RUN gcloud config set api_endpoint_overrides/spanner http://0.0.0.0:9020/
 RUN gcloud config set auth/disable_credentials true
 RUN gcloud config set core/project searce-academy
+RUN gcloud config set account rohan.singh@searce.com
 RUN gcloud spanner instances create test-instance --config=emulator-config --description="Test Instance" --nodes=1 --project=searce-academy
 RUN gcloud spanner databases create test-database --instance=test-instance
 
