@@ -10,8 +10,11 @@ RUN ./gateway_main --hostname localhost --grpc_port 9010 --http_port 9020 &
 
 # escape="
 FROM google/cloud-sdk
-RUN gcloud config set account rohan.singh@searce.com
-RUN gcloud config set core/project searce-academy
+RUN gcloud config configurations create emulator-docker
+RUN gcloud config configurations activate emulator
+RUN gcloud config configurations list
+RUN gcloud config set api_endpoint_overrides/spanner http://0.0.0.0:9020/
+RUN gcloud config set auth/disable_credentials true
 
 FROM node:10.16.3
 WORKDIR /usr/src/app
