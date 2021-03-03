@@ -13,10 +13,11 @@ FROM google/cloud-sdk
 RUN gcloud config configurations create emulator-docker \
   && gcloud config set api_endpoint_overrides/spanner http://0.0.0.0:9020/ \
   && gcloud config set auth/disable_credentials true \
-  && gcloud config set project searce-academy \
+  && gcloud config set project test-project \
   && gcloud config configurations list \
-  && gcloud spanner instances create test-instance --config=emulator-config --description="Test Instance" --nodes=1 \
-  && gcloud spanner databases create test-database --instance=test-instance
+  && gcloud spanner instance-configs list \
+  && gcloud spanner instances create test-instance --config=emulator-config --description="Test Instance" --nodes=1 --project=test-project \
+  && gcloud spanner databases create test-database --instance=test-instance --project=test-project
 
 FROM node:10.16.3
 WORKDIR /usr/src/app
