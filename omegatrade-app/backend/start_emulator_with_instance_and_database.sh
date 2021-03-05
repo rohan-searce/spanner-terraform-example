@@ -26,7 +26,7 @@ sleep 5
 
 # Preconfigured settings
 ENDPOINT=http://localhost:9020
-PROJECT_ID=searce-academy
+PROJECT_ID=test-project
 INSTANCE_ID=omegatrade-instance
 DATABASE_ID=omegatrade-database
 
