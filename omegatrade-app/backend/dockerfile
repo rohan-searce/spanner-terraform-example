@@ -9,5 +9,5 @@ WORKDIR /usr/src/app
 COPY package*.json ./
 RUN npm install
 COPY . ./
-RUN export SPANNER_EMULATOR_HOST=10.128.0.20:9020
+RUN export SPANNER_EMULATOR_HOST=omegatrade-backend-dev-i3nfvlaq3a-uw.a.run.app:9010
 CMD [ "npm", "start" ]
