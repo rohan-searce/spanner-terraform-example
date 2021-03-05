@@ -2,13 +2,12 @@ FROM google/cloud-sdk
 RUN gcloud config configurations create emulator \
   && gcloud config set auth/disable_credentials true \
   && gcloud config set project test-project \
-  && gcloud config set api_endpoint_overrides/spanner https://emulator-remote-i3nfvlaq3a-uw.a.run.app/ \
-  && gcloud spanner rows insert --table=TestTable --database=rktest --instance=rk-test --data=Key=3,Value=TestValue3
+  && gcloud config set api_endpoint_overrides/spanner https://multi-proc-cont-spanner-em-i3nfvlaq3a-uc.a.run.app/
 
 FROM node:10.16.3
 WORKDIR /usr/src/app
 COPY package*.json ./
 RUN npm install
 COPY . ./
-RUN export SPANNER_EMULATOR_HOST=emulator-remote-i3nfvlaq3a-uw.a.run.app:9020
+RUN export SPANNER_EMULATOR_HOST=multi-proc-cont-spanner-em-i3nfvlaq3a-uc.a.run.app:9020
 CMD [ "npm", "start" ]
