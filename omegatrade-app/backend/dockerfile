@@ -15,7 +15,7 @@ CMD ["/start_emulator_with_instance_and_database.sh"]
 FROM google/cloud-sdk
 RUN gcloud config configurations create emulator \
   && gcloud config set auth/disable_credentials true \
-  && gcloud config set project searce-academy \
+  && gcloud config set project test-project \
   && gcloud config set api_endpoint_overrides/spanner http://0.0.0.0:9020/
 
 FROM node:10.16.3
