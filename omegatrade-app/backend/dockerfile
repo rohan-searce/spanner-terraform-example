@@ -1,13 +1,27 @@
+FROM gcr.io/cloud-spanner-emulator/emulator as emulator
+
+FROM ubuntu:18.04
+EXPOSE 9010 9020
+
+RUN apt-get update
+RUN apt-get -y install curl
+
+COPY --from=emulator emulator_main /
+COPY --from=emulator gateway_main /
+COPY ./start_emulator_with_instance_and_database.sh /
+RUN chmod +x /start_emulator_with_instance_and_database.sh
+CMD ["/start_emulator_with_instance_and_database.sh"]
+
 FROM google/cloud-sdk
 RUN gcloud config configurations create emulator \
   && gcloud config set auth/disable_credentials true \
   && gcloud config set project searce-academy \
-  && gcloud config set api_endpoint_overrides/spanner https://multi-proc-cont-spanner-em-i3nfvlaq3a-uc.a.run.app/
+  && gcloud config set api_endpoint_overrides/spanner https://0.0.0.0:9020/
 
 FROM node:10.16.3
 WORKDIR /usr/src/app
 COPY package*.json ./
 RUN npm install
 COPY . ./
-RUN export SPANNER_EMULATOR_HOST=omegatrade-backend-dev-i3nfvlaq3a-uw.a.run.app:9010
+RUN export SPANNER_EMULATOR_HOST=localhost:9010
 CMD [ "npm", "start" ]
