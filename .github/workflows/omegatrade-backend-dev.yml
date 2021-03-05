@@ -32,7 +32,6 @@ jobs:
       - name: Build
         run: |
           docker build -t gcr.io/searce-academy/omega-trade/dev/backend:latest -f dockerfile .
-          gcloud auth activate-service-account ${{ secrets.GCP_SA_EMAIL }} --key-file=${{ secrets.GCP_SA_KEY }}
           
       - name: Push
         run: |
