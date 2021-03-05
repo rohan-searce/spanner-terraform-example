@@ -2,7 +2,7 @@ FROM google/cloud-sdk
 RUN gcloud config configurations create emulator \
   && gcloud config set auth/disable_credentials true \
   && gcloud config set project test-project \
-  && gcloud config configurations list
+  && gcloud config configurations list \
   && gcloud config set api_endpoint_overrides/spanner https://multi-proc-cont-spanner-em-i3nfvlaq3a-uc.a.run.app/
 
 FROM node:10.16.3
