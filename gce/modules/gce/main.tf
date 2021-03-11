@@ -110,7 +110,7 @@ resource "google_compute_instance" "omega_trade" {
   #   ]
   # }
 
-  metadata_startup_script = "${file("${path.module}/script.sh")}"
+  # metadata_startup_script = "${file("${path.module}/script.sh")}"
 
   timeouts {
     create = var.vm_instance_timeout

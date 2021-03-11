@@ -62,11 +62,6 @@ variable "deletion_protection" {
   description = "Whether or not to allow Terraform to destroy the instance."
 }
 
-variable "gcp_project_id" {
-  description = "Id of the GCP project"
-  type        = string
-}
-
 variable "spanner_instance_timeout" {
   type        = string
   default     = "10m"
