@@ -9,10 +9,9 @@ locals {
 }
 
 module "cloud_run_frontend" {
-  source               = "../../modules/cloud_run"
+  source               = "../../../modules/cloudrun"
   suffix               = local.suffix
   service_name         = "omegatrade-frontend"
   container_image_path = "gcr.io/[project-id]/frontend/path:tag"
-  region               = var.region
-  gcp_project_id       = var.gcp_project_id
+  region               = "us-west1"
 }

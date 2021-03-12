@@ -9,9 +9,8 @@ locals {
 }
 
 module omegatrade {
-  source           = "../modules/gce"
+  source           = "../../modules/gce"
   suffix           = local.suffix
-  gcp_project_id   = var.gcp_project_id
   region           = var.region
   vpc_network_name = "main-vpc"
   instance_name    = "spanner-emulator"

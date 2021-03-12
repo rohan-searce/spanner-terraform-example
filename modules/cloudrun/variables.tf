@@ -25,10 +25,6 @@ variable container_image_path {
 }
 
 ## --- OPTIONAL PARAMETERS ------------------------------------------------------------------------------------------------
-variable "gcp_project_id" {
-  description = "Id of the GCP project"
-  type        = string
-}
 
 variable container_port {
   type        = number

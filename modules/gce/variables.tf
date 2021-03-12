@@ -21,11 +21,6 @@ variable "region" {
 
 ## --- OPTIONAL PARAMETERS ------------------------------------------------------------------------------------------------
 
-variable "gcp_project_id" {
-  type        = string
-  description = "Project in which GCE Resources will be created."
-}
-
 variable "zone" {
   type        = string
   default     = "b"

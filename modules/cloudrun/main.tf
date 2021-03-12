@@ -26,7 +26,6 @@ resource "google_project_service" "compute_api" {
 resource "google_cloud_run_service" "omega_trade" {
   name     = local.service_name
   location = var.region
-  project  = var.gcp_project_id
 
   template {
     spec {
@@ -62,7 +61,6 @@ resource google_cloud_run_service_iam_member public_access {
   count    = local.allow_authenticated
   service  = google_cloud_run_service.omega_trade.name
   location = google_cloud_run_service.omega_trade.location
-  project  = google_cloud_run_service.omega_trade.project
   role     = "roles/run.invoker"
   member   = local.members
 }

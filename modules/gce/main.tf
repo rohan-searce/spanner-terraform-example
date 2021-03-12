@@ -43,7 +43,6 @@ resource "google_compute_address" "omege_trade_static_ip" {
 }
 
 resource "google_compute_instance" "omega_trade" {
-  project      = var.gcp_project_id
   name         = local.instance_name
   machine_type = var.instance_machine_type
   zone         = format("%s-%s", local.region, var.zone)

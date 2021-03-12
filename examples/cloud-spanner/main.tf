@@ -9,7 +9,7 @@ locals {
 }
 
 module omegatrade {
-  source         = "../modules/cloudspanner"
+  source         = "../../modules/cloud-spanner"
   suffix         = local.suffix
   instance_id    = "omega-trade"
   dbname         = "omega-trade"

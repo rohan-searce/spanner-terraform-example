@@ -9,17 +9,16 @@ locals {
 }
 
 module "cloud_run_backend" {
-  source               = "../../modules/cloud_run"
+  source               = "../../../modules/cloudrun"
   suffix               = local.suffix
   service_name         = "omegatrade-backend"
   container_image_path = "gcr.io/[project-id]/backend/path:tag"
-  region               = var.region
-  gcp_project_id       = var.gcp_project_id
+  region               = "us-west1"
   env_var = {
     "INSTANCE"   = "<enter-spanner-instance-id>",
     "DATABASE"   = "<enter-spanner-database-name>",
     "EXPIRE_IN"  = "2d",
     "JWT_SECRET" = "w54p3Y?4dj%8Xqa2jjVC84narhe5Pk",
-    "PROJECTID"  = var.gcp_project_id
+    "PROJECTID"  = "<enter-your-project-id>"
   }
 }
