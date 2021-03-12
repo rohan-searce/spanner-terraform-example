@@ -12,12 +12,7 @@ User.registerUser = async function (user, cb) {
       const [rowCount] = await transaction.runUpdate({
         sql: 'INSERT users (userId, fullName, businessEmail,password,photoUrl,provider) VALUES (@userId, @fullName, @businessEmail,@password,@photoUrl,@provider)',
         params: {
-          userId: user.userId,
-          fullName: user.fullName,
-          businessEmail: user.businessEmail,
-          password: user.password,
-          photoUrl: user.photoUrl,
-          provider: user.provider
+          ...user
         },
       });
       await transaction.commit();
@@ -29,12 +24,12 @@ User.registerUser = async function (user, cb) {
   });
 }
 
-User.findUser = async function (user, cb) {
+User.findUser = async function (email, cb) {
   try {
     const query = {
-      sql: 'select userId,fullName,businessEmail,password,photoUrl,provider from users where businessEmail = @businessEmail',
+      sql: 'SELECT userId,fullName,businessEmail,password,photoUrl,provider FROM users where businessEmail = @businessEmail',
       params: {
-        businessEmail: user.businessEmail
+        businessEmail: email
       }
     };
     let result = await database.run(query);
@@ -45,6 +40,7 @@ User.findUser = async function (user, cb) {
     }
   } catch (error) {
     cb(error, null)
+    return;
   }
 }
 

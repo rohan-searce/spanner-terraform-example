@@ -1,4 +1,4 @@
-'user strict';
+'use strict';
 const {Spanner} = require('@google-cloud/spanner');
 // Creates Spanner client
 const spanner = new Spanner({projectId: process.env.PROJECTID,});

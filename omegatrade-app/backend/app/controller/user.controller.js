@@ -2,9 +2,8 @@
 const User = require('../models/user.model')
 const bcrypt = require('bcryptjs')
 const jwt = require("jsonwebtoken");
-const {
-    v4: uuidv4
-} = require('uuid');
+const { v4: uuidv4 } = require('uuid');
+
 
 /**
  * Function to create a new user if not exists
@@ -12,8 +11,8 @@ const {
  * @param {JSON} req contains request headers and payload businessEmail,fullName,password,photoUrl,provider
  */
 exports.register = async function (req, res) {
-    const params = req.body;
-    await User.findUser(params, function (err, data) {
+    const body = req.body;
+    await User.findUser(body.businessEmail, function (err, data) {
         if (data && data.userId) {
             res.status(400).json({
                 success: false,
@@ -28,46 +27,37 @@ exports.register = async function (req, res) {
         }
     });
     const salt = await bcrypt.genSalt(10);
-    const hashpassword = await bcrypt.hash(params.password, salt)
+    const password = await bcrypt.hash(body.password, salt);
+    delete body.password; 
+    delete body.confirmPassword;
     const user = {
+        ...body,
         userId: uuidv4(),
-        fullName: params.fullName,
-        businessEmail: params.businessEmail,
-        password: hashpassword,
-        photoUrl: params.photoUrl,
-        provider: params.provider
     }
     try {
-        await User.registerUser(user, function (err, data) {
+        await User.registerUser({ ...user,password }, function (err, data) {
             if (err) {
                 res.json({
                     success: false,
                     message: 'Something went wrong while registering new user!'
                 });
             }
-            const payload = {
-                'userId': user.userId,
-                'fullName': user.fullName,
-                'businessEmail': user.businessEmail,
-                'photoUrl': params.photoUrl,
-                'provider': params.provider
-            };
-            jwt.sign(payload, process.env.JWT_SECRET, {
-                expiresIn: process.env.EXPIRE_IN
-            }, function (err, token) {
-                if (err) {
-                    res.status(400).json({
-                        success: false,
-                        message: 'Something went wrong while registering new user!'
+            if (data) {
+                jwt.sign(user, process.env.JWT_SECRET, { expiresIn: process.env.EXPIRE_IN }, function (err, token) {
+                    if (err) {
+                        res.status(400).json({
+                            success: false,
+                            message: 'Something went wrong while registering new user!'
+                        });
+                    }
+                    res.json({
+                        success: true,
+                        message: 'Registered successfully!',
+                        userInfo: user,
+                        authToken: token
                     });
-                }
-                res.json({
-                    success: true,
-                    message: 'Registered successfully!',
-                    userInfo: payload,
-                    authToken: token
                 });
-            });
+            }
         });
     } catch (err) {
         res.status(400).json({
@@ -84,28 +74,20 @@ exports.register = async function (req, res) {
  * @param {*} req contains request headers and payload businessEmail,password
  */
 exports.login = function (req, res) {
-    const params = req.body;
-    User.findUser(params, function (err, user) {
+    const body = req.body;
+    User.findUser(body.businessEmail, function (err, user) {
         if (user && user.userId) {
-            if (bcrypt.compareSync(params.password, user.password)) {
-                if (user) {
-                    const payload = {
-                        'userId': user.userId,
-                        'fullName': user.fullName,
-                        'businessEmail': user.businessEmail,
-                        'photoUrl': user.photoUrl,
-                        'provider': user.provider
-                    };
-                    const token = jwt.sign(payload, process.env.JWT_SECRET, {
+            if (bcrypt.compareSync(body.password, user.password)) {
+                    delete user.password;
+                    const token = jwt.sign(user, process.env.JWT_SECRET, {
                         expiresIn: process.env.EXPIRE_IN
                     });
                     res.status(200).json({
                         success: true,
                         message: 'Logged in successfully',
-                        userInfo: payload,
+                        userInfo: user,
                         authToken: token
                     });
-                }
             } else
                 res.status(401).json({
                     success: false,
@@ -117,7 +99,10 @@ exports.login = function (req, res) {
                 message: 'invalid username or password'
             });
         if (err)
-            res.send(err);
+            res.status(500).json({
+                success: false,
+                message: 'Something went wrong,Error while authenticating user!'
+            });
     });
 };
 
@@ -128,31 +113,21 @@ exports.login = function (req, res) {
  * @param {*} req contains request headers and payload businessEmail,password
  */
 exports.getTokenSocial = function (req, res) {
-    const params = req.body;
-    if (params && params.provider === 'GOOGLE') {
-        User.findUser({
-            'businessEmail': params.email
-        }, function (err, user) {
-            console.log(user);
+    const body = req.body;
+    if (body && body.provider === 'GOOGLE') {
+        User.findUser(body.email, function (err, user) {
             if (user && user.userId) {
-                if (user) {
-                    const payload = {
-                        'userId': user.userId,
-                        'fullName': user.fullName,
-                        'businessEmail': user.businessEmail,
-                        'photoUrl': user.photoUrl,
-                        'provider': user.provider
-                    };
-                    const token = jwt.sign(payload, process.env.JWT_SECRET, {
+                    delete user.password;
+                    const token = jwt.sign(user, process.env.JWT_SECRET, {
                         expiresIn: process.env.EXPIRE_IN
                     });
                     res.status(200).json({
                         success: true,
                         message: 'Logged in successfully',
-                        userInfo: payload,
+                        userInfo: user,
                         authToken: token
                     });
-                }
+                
             } else
                 res.status(401).json({
                     success: false,
@@ -160,7 +135,10 @@ exports.getTokenSocial = function (req, res) {
                     redirect: 'sign-up'
                 });
             if (err)
-                res.send(err);
+                res.status(500).json({
+                    success: false,
+                    message: 'Something went wrong,Error while authenticating user!'
+                });
         });
     }
 };
