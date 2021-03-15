@@ -32,7 +32,6 @@ export class LoginComponent implements OnInit {
     ngOnInit(): void {
       // Function to Subscribe to the authentication state.
       // Receive a SocialUser object when the user logs in and a null when the user logs out.
-      console.log('here');
       this.authService.authState.subscribe((user) => {
             this.user = user;
         });
