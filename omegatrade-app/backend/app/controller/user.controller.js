@@ -112,7 +112,7 @@ exports.login = function (req, res) {
  * 
  * @param {*} req contains request headers and payload businessEmail,password
  */
-exports.getTokenSocial = function (req, res) {
+exports.getToken = function (req, res) {
     const body = req.body;
     if (body && body.provider === 'GOOGLE') {
         User.findUser(body.email, function (err, user) {

@@ -19,7 +19,8 @@ User.registerUser = async function (user, cb) {
       cb(null, rowCount);
       return;
     } catch (err) {
-      cb(err, null)
+      cb(err, null);
+      return;
     }
   });
 }
