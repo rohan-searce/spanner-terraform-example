@@ -4,17 +4,17 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
-import { LoginComponent } from './login/login.component';
-import { ValidationService } from './shared/validation.service';
-import { ControlMessagesComponent } from './shared/control-messages/control-messages.component';
-import { RegisterComponent } from './register/register.component';
+import { LoginComponent } from './components/login/login.component';
+import { ValidationService } from './services/validation.service';
+import { ControlMessagesComponent } from './components/control-messages/control-messages.component';
+import { RegisterComponent } from './components/register/register.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { DemoMaterialModule } from './shared/material-module'
-import { AuthGuardService } from './auth/auth-guard.service';
-import { TokenStorageService } from './auth/token-storage.service';
+import { MaterialModule } from './modules/material-module'
+import { AuthGuardService } from './services/auth-guard.service';
+import { TokenStorageService } from './services/token-storage.service';
 import { SocialLoginModule, SocialAuthServiceConfig } from 'angularx-social-login';
 import { GoogleLoginProvider } from 'angularx-social-login';
-import { HttpConfigInterceptor} from './auth/httpconfig.interceptor';
+import { HttpConfigInterceptor} from './interceptor/httpconfig.interceptor';
 
 
 
@@ -33,7 +33,7 @@ import { HttpConfigInterceptor} from './auth/httpconfig.interceptor';
     AppRoutingModule,
     ReactiveFormsModule,
     BrowserAnimationsModule,
-    DemoMaterialModule,
+    MaterialModule,
     HttpClientModule,
     SocialLoginModule
   ],

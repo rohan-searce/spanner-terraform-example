@@ -46,5 +46,5 @@ import { OverlayModule } from '@angular/cdk/overlay';
     PortalModule,
   ]
 })
-export class DemoMaterialModule { }
+export class MaterialModule { }
   

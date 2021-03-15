@@ -90,3 +90,11 @@ input::placeholder {
     color: #333333c2;
     font-weight: 100;
 }
+
+.oauth-btn {
+    text-transform:none
+}
+
+.google-logo{
+    margin-right:5px;
+}

@@ -1,12 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { ValidationService } from '../shared/validation.service';
-import { RestService } from '../auth/rest.service';
+import { ValidationService } from '../../services/validation.service';
+import { RestService } from '../../services/rest.service';
 import { SocialAuthService } from 'angularx-social-login';
 import { GoogleLoginProvider } from 'angularx-social-login';
-import { TokenStorageService } from '../auth/token-storage.service';
-import { SnackBarService } from '../shared/snackbar.service';
+import { TokenStorageService } from '../../services/token-storage.service';
+import { SnackBarService } from '../../services/snackbar.service';
 
 @Component({
   selector: 'app-register',
@@ -70,7 +70,7 @@ export class RegisterComponent implements OnInit {
     if (this.signUpForm.dirty && this.signUpForm.valid) {
       if (this.signUpForm.value.password === this.signUpForm.value.confirmPassword) {
         this.loader = true;
-        this.restService.postData('register-user', this.signUpForm.value)
+        this.restService.postData('users/register-user', this.signUpForm.value)
           .subscribe(
             response => {
               if (response && response.success) {

@@ -1,12 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormBuilder, Validators } from '@angular/forms';
-import { ValidationService } from '../shared/validation.service';
-import { RestService } from '../auth/rest.service';
-import { TokenStorageService } from '../auth/token-storage.service';
+import { ValidationService } from '../../services/validation.service';
+import { RestService } from '../../services/rest.service';
+import { TokenStorageService } from '../../services/token-storage.service';
 import { SocialAuthService } from 'angularx-social-login';
 import { GoogleLoginProvider } from 'angularx-social-login';
-import { SnackBarService } from '../shared/snackbar.service';
+import { SnackBarService } from '../../services/snackbar.service';
 
 @Component({
     selector: 'app-login',
@@ -32,6 +32,7 @@ export class LoginComponent implements OnInit {
     ngOnInit(): void {
       // Function to Subscribe to the authentication state.
       // Receive a SocialUser object when the user logs in and a null when the user logs out.
+      console.log('here');
       this.authService.authState.subscribe((user) => {
             this.user = user;
         });
@@ -43,7 +44,7 @@ export class LoginComponent implements OnInit {
     signInWithGoogle(): void {
         this.authService.signIn(GoogleLoginProvider.PROVIDER_ID).then(user => {
             this.loader = true;
-            this.restService.postData('get-auth-token', user)
+            this.restService.postData('users/get-auth-token', user)
                 .subscribe(
                     response => {
                         if (response && response.success) {
@@ -74,7 +75,7 @@ export class LoginComponent implements OnInit {
     login(): void {
         if (this.loginForm.dirty && this.loginForm.valid) {
             this.loader = true;
-            this.restService.postData('login', this.loginForm.value)
+            this.restService.postData('users/login', this.loginForm.value)
                 .subscribe(
                     response => {
                         if (response && response.success) {
