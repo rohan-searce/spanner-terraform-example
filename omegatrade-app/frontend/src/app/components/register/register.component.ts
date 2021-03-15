@@ -7,6 +7,7 @@ import { SocialAuthService } from 'angularx-social-login';
 import { GoogleLoginProvider } from 'angularx-social-login';
 import { TokenStorageService } from '../../services/token-storage.service';
 import { SnackBarService } from '../../services/snackbar.service';
+import { take } from "rxjs/operators";
 
 @Component({
   selector: 'app-register',
@@ -71,6 +72,7 @@ export class RegisterComponent implements OnInit {
       if (this.signUpForm.value.password === this.signUpForm.value.confirmPassword) {
         this.loader = true;
         this.restService.postData('users/register-user', this.signUpForm.value)
+          .pipe(take(1))
           .subscribe(
             response => {
               if (response && response.success) {

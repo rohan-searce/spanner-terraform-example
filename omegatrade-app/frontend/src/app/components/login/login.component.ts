@@ -7,6 +7,7 @@ import { TokenStorageService } from '../../services/token-storage.service';
 import { SocialAuthService } from 'angularx-social-login';
 import { GoogleLoginProvider } from 'angularx-social-login';
 import { SnackBarService } from '../../services/snackbar.service';
+import { take } from "rxjs/operators";
 
 @Component({
     selector: 'app-login',
@@ -75,6 +76,7 @@ export class LoginComponent implements OnInit {
         if (this.loginForm.dirty && this.loginForm.valid) {
             this.loader = true;
             this.restService.postData('users/login', this.loginForm.value)
+                .pipe(take(1))
                 .subscribe(
                     response => {
                         if (response && response.success) {
