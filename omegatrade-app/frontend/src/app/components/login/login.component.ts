@@ -18,7 +18,7 @@ export class LoginComponent implements OnInit {
     loginForm: any;
     loader = false;
     user: any;
-
+    
     // tslint:disable-next-line: max-line-length
     constructor(private snackBarService: SnackBarService, private tokenStorage: TokenStorageService, private authService: SocialAuthService, private restService: RestService, private formBuilder: FormBuilder, private router: Router) {
         this.loginForm = this.formBuilder.group({
@@ -31,11 +31,6 @@ export class LoginComponent implements OnInit {
      *  Function to Initiate component.
      */
     ngOnInit(): void {
-      // Function to Subscribe to the authentication state.
-      // Receive a SocialUser object when the user logs in and a null when the user logs out.
-      this.authService.authState.subscribe((user) => {
-            this.user = user;
-        });
     }
 
     /**
@@ -101,4 +96,5 @@ export class LoginComponent implements OnInit {
         this.snackBarService.openSnackBar(response.message, '');
     }
 }
+
 

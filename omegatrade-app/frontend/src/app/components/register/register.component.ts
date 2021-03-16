@@ -18,6 +18,7 @@ export class RegisterComponent implements OnInit {
   signUpForm: any;
   loader = false;
   user: any;
+  
   // tslint:disable-next-line: max-line-length
   constructor(private snackBarService: SnackBarService, private tokenStorage: TokenStorageService, private formBuilder: FormBuilder, private restService: RestService, private router: Router, private authService: SocialAuthService) {
     // Init sign-up form with form builder.
@@ -35,11 +36,6 @@ export class RegisterComponent implements OnInit {
    *  Function to Initiate component.
    */
   ngOnInit(): void {
-    // Function to Subscribe to the authentication state.
-    // Receive a SocialUser object when the user logs in and a null when the user logs out.
-    this.authService.authState.subscribe((user) => {
-      this.user = user;
-    });
   }
 
   /**
@@ -98,4 +94,5 @@ export class RegisterComponent implements OnInit {
     //this.router.navigateByUrl('/dashboard');
     this.snackBarService.openSnackBar(response.message, '');
   }
+
 }
