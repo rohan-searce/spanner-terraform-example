@@ -3,26 +3,15 @@ const database = require('./../config/database.js');
 var User = function () {};
 
 User.registerUser = async function (user, cb) {
-  database.runTransaction(async (err, transaction) => {
-    if (err) {
-      cb(err, null)
+  const usersTable = database.table('users');
+  try {
+    await usersTable.insert(user);
+    cb(null, true);
+    return true;
+  } catch (err) {
+    cb(err, null);
       return;
-    }
-    try {
-      const [rowCount] = await transaction.runUpdate({
-        sql: 'INSERT users (userId, fullName, businessEmail,password,photoUrl,provider) VALUES (@userId, @fullName, @businessEmail,@password,@photoUrl,@provider)',
-        params: {
-          ...user
-        },
-      });
-      await transaction.commit();
-      cb(null, rowCount);
-      return;
-    } catch (err) {
-      cb(err, null);
-      return;
-    }
-  });
+  } 
 }
 
 User.findUser = async function (email, cb) {
