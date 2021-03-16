@@ -1,10 +1,7 @@
 FROM gcr.io/cloud-spanner-emulator/emulator as static-emulator-source
 
 FROM node:15.11.0-buster-slim
-ENV TINI_VERSION v0.18.0
-ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini-static /tini
-RUN chmod +x /tini 
-
+# pre-requisites
 RUN apt-get -y update && apt-get -y install curl \
     && apt-get install -y gnupg2
 RUN echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] \
@@ -14,6 +11,11 @@ http://packages.cloud.google.com/apt cloud-sdk main" \
 apt-key --keyring /usr/share/keyrings/cloud.google.gpg  add - && \
 apt-get update -y && apt-get install google-cloud-sdk -y
 
+#Tini Init to start emulator and npm processes
+ENV TINI_VERSION v0.18.0
+ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini-static /tini
+RUN chmod +x /tini 
+
 # Configure gcloud for cloudspanner emulator 
 RUN gcloud config configurations create emulator \
   && gcloud config set auth/disable_credentials true \
@@ -21,15 +23,11 @@ RUN gcloud config configurations create emulator \
   && gcloud config set api_endpoint_overrides/spanner http://localhost:9020/
 ENV SPANNER_EMULATOR_HOST="localhost:9010"
 
+# Application 
 WORKDIR /usr/src/app
 COPY package*.json ./
 RUN npm install
 COPY . ./
 COPY --from=static-emulator-source ./gateway_main ./emulator_main ./
 RUN chmod u+x ddl.sh start.sh gateway_main emulator_main
-
-#EXPOSE 9010 9020
-
-#CMD ["./gateway_main", "--hostname", "0.0.0.0"]
-
 ENTRYPOINT ["/tini", "--", "./start.sh"]
