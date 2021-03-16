@@ -40,6 +40,7 @@ export class LoginComponent implements OnInit {
         this.authService.signIn(GoogleLoginProvider.PROVIDER_ID).then(user => {
             this.loader = true;
             this.restService.postData('users/get-auth-token', user)
+                .pipe(take(1))
                 .subscribe(
                     response => {
                         if (response && response.success) {
