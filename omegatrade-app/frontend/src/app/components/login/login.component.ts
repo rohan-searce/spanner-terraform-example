@@ -58,13 +58,6 @@ export class LoginComponent implements OnInit {
     }
 
     /**
-     * Function to signout.
-     */
-    signOut(): void {
-        this.authService.signOut();
-    }
-
-    /**
      * Function to validate and login the user.
      */
     login(): void {
