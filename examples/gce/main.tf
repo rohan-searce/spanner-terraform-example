@@ -14,5 +14,5 @@ module omegatrade {
   region           = var.region
   vpc_network_name = "main-vpc"
   instance_name    = "spanner-emulator"
-  network_tags     = ["http-server", "https-server", "ssh"]
+  network_tags     = ["http-server", "https-server", "ssh", "emulator-server"]
 }

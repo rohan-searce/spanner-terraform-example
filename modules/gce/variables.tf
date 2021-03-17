@@ -87,3 +87,9 @@ variable "sa_timeout" {
   default     = "10m"
   description = "How long a Service Account creation operation is allowed to take before being considered a failure."
 }
+
+variable "firewall_timeout" {
+  type        = string
+  default     = "5m"
+  description = "How long a Firewall creation operation is allowed to take before being considered a failure."
+}

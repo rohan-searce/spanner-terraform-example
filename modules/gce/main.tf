@@ -10,6 +10,8 @@ locals {
   name_static_vm_ip = format("%s-ext-ip-%s", var.instance_name, var.suffix)
 
   sa_id = format("%s-sa-%s", var.instance_name, var.suffix)
+
+  firewall_name = format("%s-fw-%s", var.instance_name, var.suffix)
 }
 
 resource "google_project_service" "compute_api" {
@@ -87,6 +89,24 @@ resource "google_compute_instance" "omega_trade" {
 resource "google_project_iam_member" "spanner_role" {
   role          = "roles/spanner.viewer"
   member        = "serviceAccount:${google_service_account.omega_trade_sa.email}"
+}
+
+resource "google_compute_firewall" "omega_trade_fw" {
+  name    = local.firewall_name
+  network = var.vpc_network_name
+
+  allow {
+    protocol = "tcp"
+    ports    = ["22", "9010", "9020"]
+  }
+ 
+  target_tags = local.network_tags
+
+  timeouts {
+    create = var.firewall_timeout
+    update = var.firewall_timeout
+    delete = var.firewall_timeout
+  }
 }
 
 data "google_client_config" "google_client" {}
