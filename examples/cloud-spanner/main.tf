@@ -1,3 +1,12 @@
+terraform {
+  required_version = ">= 0.13.1" # see https://releases.hashicorp.com/terraform/
+}
+
+provider "google" {
+  version = "3.51.0" # see https://github.com/terraform-providers/terraform-provider-google/releases
+  project = var.project
+}
+
 resource "random_string" "launch_id" {
   length  = 4
   special = false
@@ -16,4 +25,5 @@ module omegatrade {
   config      = var.spanner_config
   num_nodes   = var.spanner_nodes
   labels_var  = var.spanner_labels
+  project     = var.project
 }

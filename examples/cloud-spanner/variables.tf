@@ -23,3 +23,8 @@ variable "spanner_labels" {
   default     = {}
   description = "Labels to inject into the spanner instance."
 }
+
+variable "project" {
+  type        = string
+  description = "GCP Project ID"
+}
