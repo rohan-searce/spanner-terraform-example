@@ -24,13 +24,12 @@ variable "project" {
   description = "GCP Project ID"
 }
 
-## --- OPTIONAL PARAMETERS ------------------------------------------------------------------------------------------------
-
 variable "zone" {
   type        = string
-  default     = "b"
   description = "The zone that the machine should be created in."
 }
+
+## --- OPTIONAL PARAMETERS ------------------------------------------------------------------------------------------------
 
 variable "instance_machine_type" {
   type        = string
@@ -43,7 +42,6 @@ variable "network_tags" {
   default     = []
   description = "A list of network tags to attach to the instance."
 }
-
 
 variable "boot_disk_size" {
   type        = number
