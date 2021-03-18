@@ -1,4 +1,4 @@
-cloud_run_service_name       = "omegatrade"
+cloud_run_service_name       = "omegatrade-backend"
 backend_container_image_path = "gcr.io/[PROJECT_NAME]/[APP]:[TAG]"
 cloud_run_region             = "us-west1"
 cloud_run_env_var = {
