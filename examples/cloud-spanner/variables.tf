@@ -10,13 +10,11 @@ variable "spanner_dbname" {
 
 variable "spanner_config" {
   type        = string
-  default     = "regional-us-west1"
   description = "Cloud Spanner Instance config - Regional / multi-region. For allowed configurations, check: https://cloud.google.com/spanner/docs/instances#available-configurations-regional"
 }
 
 variable "spanner_nodes" {
   type        = number
-  default     = 1
   description = "The number of nodes allocated to this instance."
 }
 
