@@ -1,3 +1,12 @@
+terraform {
+  required_version = ">= 0.13.1" # see https://releases.hashicorp.com/terraform/
+}
+
+provider "google" {
+  version = "3.51.0" # see https://github.com/terraform-providers/terraform-provider-google/releases
+  project = var.project
+}
+
 resource "random_string" "launch_id" {
   length  = 4
   special = false
@@ -11,14 +20,9 @@ locals {
 module "cloud_run_backend" {
   source               = "../../../modules/cloudrun"
   suffix               = local.suffix
-  service_name         = "omegatrade-backend"
-  container_image_path = "gcr.io/[project-id]/backend/path:tag"
-  region               = "us-west1"
-  env_var = {
-    "INSTANCE"   = "<enter-spanner-instance-id>",
-    "DATABASE"   = "<enter-spanner-database-name>",
-    "EXPIRE_IN"  = "2d",
-    "JWT_SECRET" = "w54p3Y?4dj%8Xqa2jjVC84narhe5Pk",
-    "PROJECTID"  = "<enter-your-project-id>"
-  }
+  service_name         = "${var.cloud_run_service_name}-backend"
+  container_image_path = var.backend_container_image_path
+  region               = var.cloud_run_region
+  env_var              = var.cloud_run_env_var
+  project              = var.project
 }
