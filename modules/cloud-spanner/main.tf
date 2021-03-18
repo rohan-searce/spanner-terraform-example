@@ -25,6 +25,7 @@ resource "google_spanner_instance" "omega_trade" {
   display_name = local.display_name
   num_nodes    = var.num_nodes
   labels       = var.labels_var
+  project      = var.project
 
   timeouts {
     create = var.spanner_instance_timeout

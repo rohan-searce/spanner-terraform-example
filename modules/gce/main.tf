@@ -49,6 +49,7 @@ resource "google_compute_instance" "omega_trade" {
   machine_type = var.instance_machine_type
   zone         = format("%s-%s", local.region, var.zone)
   tags         = local.network_tags
+  project      = var.project
 
   boot_disk {
     initialize_params {

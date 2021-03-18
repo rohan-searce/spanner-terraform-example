@@ -25,3 +25,8 @@ variable "gce_network_tags" {
   default     = []
   description = "A list of network tags to attach to the instance."
 }
+
+variable "project" {
+  type        = string
+  description = "GCP Project ID"
+}
