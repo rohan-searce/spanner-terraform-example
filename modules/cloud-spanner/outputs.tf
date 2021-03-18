@@ -14,7 +14,7 @@ output "dbname" {
 }
 
 output "ddl_queries" {
-  description = "DDL being created in Google Cloud Spanner DB" 
+  description = "DDL being created in Google Cloud Spanner DB"
   value       = var.ddl_queries
 }
 

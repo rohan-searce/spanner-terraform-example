@@ -87,8 +87,8 @@ resource "google_compute_instance" "omega_trade" {
 }
 
 resource "google_project_iam_member" "spanner_role" {
-  role          = "roles/spanner.viewer"
-  member        = "serviceAccount:${google_service_account.omega_trade_sa.email}"
+  role   = "roles/spanner.viewer"
+  member = "serviceAccount:${google_service_account.omega_trade_sa.email}"
 }
 
 resource "google_compute_firewall" "omega_trade_fw" {
@@ -99,7 +99,7 @@ resource "google_compute_firewall" "omega_trade_fw" {
     protocol = "tcp"
     ports    = ["22", "9010", "9020"]
   }
- 
+
   target_tags = local.network_tags
 
   timeouts {
