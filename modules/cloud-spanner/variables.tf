@@ -14,18 +14,10 @@ variable "instance_id" {
   description = "A unique identifier for the instance, which cannot be changed after the instance is created."
 }
 
-variable "instance_display_name" {
-  type        = string
-  default     = ""
-  description = "The descriptive name for this instance as it appears in UIs. Must be unique per project and between 4 and 30 characters in length."
-}
-
 variable "dbname" {
   type        = string
   description = "A unique identifier for the database, which cannot be changed after the instance is created."
 }
-
-## --- OPTIONAL PARAMETERS ------------------------------------------------------------------------------------------------
 
 variable "project" {
   type        = string
@@ -40,6 +32,14 @@ variable "config" {
 variable "num_nodes" {
   type        = number
   description = "The number of nodes allocated to this instance."
+}
+
+## --- OPTIONAL PARAMETERS ------------------------------------------------------------------------------------------------
+
+variable "instance_display_name" {
+  type        = string
+  default     = ""
+  description = "The descriptive name for this instance as it appears in UIs. Must be unique per project and between 4 and 30 characters in length."
 }
 
 variable "labels_var" {
