@@ -4,5 +4,5 @@ terraform {
 
 provider "google" {
   version = "3.51.0" # see https://github.com/terraform-providers/terraform-provider-google/releases
-  project = "searce-academy"
+  project = "[gcp-project-id]"
 }
