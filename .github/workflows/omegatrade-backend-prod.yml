@@ -44,9 +44,10 @@ jobs:
           --platform managed \
           --allow-unauthenticated \
           --project searce-academy \
+          --port 9020 \
           --set-env-vars=PROJECTID=searce-academy \
           --set-env-vars=INSTANCE=original_spanner_id \
           --set-env-vars=DATABASE=original_spanner_database \
           --set-env-vars=JWT_SECRET=abc123 \
           --set-env-vars=EXPIRE_IN=2d
-
+          
