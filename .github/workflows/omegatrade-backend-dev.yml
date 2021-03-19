@@ -44,5 +44,5 @@ jobs:
           --image gcr.io/searce-academy/omega-trade/dev/backend \
           --platform managed \
           --allow-unauthenticated \
-          --project searce-academy
-          
+          --project searce-academy \
+          --port 9020
