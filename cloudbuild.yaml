@@ -1,7 +1,7 @@
 steps:
 - name: 'gcr.io/cloud-builders/docker'
   id: Build docker image
-  args: ['build', '-t=${_GCR_DOCKER_IMAGE_PATH}:$COMMIT_SHA', '-t=${_GCR_DOCKER_IMAGE_PATH}:latest', '.']
+  args: ['build', '-t=${_GCR_DOCKER_IMAGE_PATH}:$COMMIT_SHA', '-t=${_GCR_DOCKER_IMAGE_PATH}:latest', '-f', '${_DOCKERFILE}', '.']
   dir: ${_SERVICE_FOLDER_NAME}
 - name: 'gcr.io/cloud-builders/docker'
   id: Push docker image with SHA tag
