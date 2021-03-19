@@ -11,7 +11,7 @@ steps:
   args: ['push', '${_GCR_DOCKER_IMAGE_PATH}:latest']
 - name: 'gcr.io/cloud-builders/gcloud'
   id: Deploy on Google Cloud Run
-  args: ['run', 'deploy', '${_CLOUD_RUN_SERVICE_NAME}', '--image=${_GCR_DOCKER_IMAGE_PATH}:$COMMIT_SHA', '--platform=${_PLATFORM}', '--region=${_RUN_REGION}', '--allow-unauthenticated', '--project=$PROJECT_ID', '--set-env-vars=PROJECTID=$PROJECT_ID, INSTANCE=${_SPANNER_ID}, DATABASE=${_SPANNER_DATABASE}, JWT_SECRET=${_JWT_SECRET}, EXPIRE_IN=${_EXPIRATION}']
+  args: ['run', 'deploy', '${_CLOUD_RUN_SERVICE_NAME}', '--image=${_GCR_DOCKER_IMAGE_PATH}:$COMMIT_SHA', '--platform=${_PLATFORM}', '--region=${_RUN_REGION}', '--allow-unauthenticated', '--port=9020', '--project=$PROJECT_ID', '--set-env-vars=PROJECTID=$PROJECT_ID, INSTANCE=${_SPANNER_ID}, DATABASE=${_SPANNER_DATABASE}, JWT_SECRET=${_JWT_SECRET}, EXPIRE_IN=${_EXPIRATION}']
 options:
   substitution_option: 'ALLOW_LOOSE'
 
