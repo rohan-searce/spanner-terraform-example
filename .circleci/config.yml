@@ -1,0 +1,42 @@
+version: 2
+jobs:
+  deploy:
+    docker:
+      - image: google/cloud-sdk
+    steps:
+      - checkout
+      - run:
+          name: Authorize GCloud Command Line Tool
+          command: |
+            echo $GCLOUD_SERVICE_KEY | base64 --decode | gcloud auth activate-service-account --key-file=-
+      - run:
+          name: Configure Docker
+          command: |
+            gcloud auth configure-docker
+      - run:
+          name: Docker Build
+          command: |
+            docker build -t gcr.io/searce-academy/omega-trade/dev/backend:latest -f dockerfile.local.emulator .
+      - run: 
+          name: Docker Push
+          command: |
+            docker push gcr.io/searce-academy/omega-trade/dev/backend:latest
+      - run:
+          name: Deploy To Google Cloud Run
+          command: |
+            gcloud run deploy omegatrade-backend-dev-ci \
+            --region us-west1 \
+            --image gcr.io/searce-academy/omega-trade/dev/backend \
+            --platform managed \
+            --allow-unauthenticated \
+            --project searce-academy \
+            --port 9020
+workflows:
+  version: 2
+  build-test-and-deploy:
+    jobs:
+      - deploy:
+          filters:
+            branches:
+              only:
+                - main
