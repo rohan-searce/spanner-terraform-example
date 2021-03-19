@@ -2,7 +2,7 @@ version: 2
 jobs:
   deploy:
     docker:
-      - image: google/cloud-sdk
+      - image: ubuntu-latest
     steps:
       - checkout
       - run:
