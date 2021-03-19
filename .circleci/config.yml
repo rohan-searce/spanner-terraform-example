@@ -17,7 +17,7 @@ jobs:
       - run:
           name: Docker Build
           command: |
-            docker build -t gcr.io/searce-academy/omega-trade/dev/backend:latest -f dockerfile.local.emulator .
+            docker build -t gcr.io/searce-academy/omega-trade/dev/backend:latest -f omegatrade/backend/dockerfile.local.emulator .
       - run: 
           name: Docker Push
           command: |
