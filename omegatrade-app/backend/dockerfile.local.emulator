@@ -25,6 +25,8 @@ ENV SPANNER_EMULATOR_HOST="localhost:9010"
 
 # Application 
 WORKDIR /usr/src/app
+RUN ls -la
+RUN pwd
 COPY package*.json ./
 RUN npm install
 COPY . ./
