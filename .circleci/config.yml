@@ -1,8 +1,8 @@
-version: 2.1
+version: 2
 jobs:
-  deploy:
+  auth:
     docker:
-      - image: talkiq/gcloud@6.0.1
+      - image: google/cloud-sdk
     steps:
       - checkout
       - run:
@@ -14,6 +14,11 @@ jobs:
           name: Configure Docker
           command: |
             gcloud auth configure-docker
+  docker_tag_build_push:
+    docker:
+      - image: docker:18.09.9-dind
+    steps:
+      - checkout
       - run:
           name: Docker Build
           command: |
@@ -22,6 +27,11 @@ jobs:
           name: Docker Push
           command: |
             docker push gcr.io/searce-academy/omega-trade/dev/backend:latest
+  deploy_cloud_run:
+    docker:
+      - image: google/cloud-sdk
+    steps:
+      - checkout
       - run:
           name: Deploy To Google Cloud Run
           command: |
