@@ -2,11 +2,11 @@ version: 2
 jobs:
   deploy:
     docker:
-      - image: ubuntu
+      - image: google/cloud-sdk
+      - image: docker:18.09.9-dind
     steps:
       - checkout
       - run:
-          image: google/cloud-sdk
           name: Authorize GCloud Command Line Tool
           command: |
             echo $GCLOUD_KEY_JSON > /tmp/key.json
