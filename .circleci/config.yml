@@ -1,8 +1,8 @@
-version: 2
+version: 2.1
 jobs:
   deploy:
     docker:
-      - image: rohankalhans/docker-gcloudsdk
+      - image: talkiq/gcloud@6.0.1
     steps:
       - checkout
       - run:
