@@ -8,7 +8,8 @@ jobs:
       - run:
           name: Authorize GCloud Command Line Tool
           command: |
-            echo $GCLOUD_SERVICE_KEY | base64 --decode | gcloud auth activate-service-account --key-file=-
+            echo $GCLOUD_SERVICE_KEY | base64 --decode > /tmp/key.json
+            gcloud auth activate-service-account --key-file /tmp/key.json
       - run:
           name: Configure Docker
           command: |
