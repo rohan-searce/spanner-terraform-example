@@ -2,7 +2,7 @@ version: 2
 jobs:
   deploy:
     docker:
-      - image: ubuntu-latest
+      - image: ubuntu
     steps:
       - checkout
       - run:
