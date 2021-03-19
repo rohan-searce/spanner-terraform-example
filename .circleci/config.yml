@@ -1,53 +1,33 @@
-version: 2
 jobs:
-  deploy:
+  build_and_deploy:
     docker:
-      - image: google/cloud-sdk
+      - image: 'cimg/base:stable'
     steps:
       - checkout
+      - cloudrun/init
+      - cloudrun/build:
+          tag: 'gcr.io/searce-academy/omega-trade/dev/backend:${CIRCLE_SHA1}'
+      - cloudrun/deploy:
+          image: 'gcr.io/searce-academy/omega-trade/dev/backend:${CIRCLE_SHA1}'
+          platform: managed
+          region: us-east1
+          service-name: omegatrade-backend-dev-ci
+          unauthenticated: true
       - run:
-          name: Authorize GCloud Command Line Tool
-          command: |
-            echo $GCLOUD_KEY_JSON > /tmp/key.json
-            gcloud auth activate-service-account --key-file /tmp/key.json
-      - run:
-          name: Configure Docker
-          command: |
-            gcloud auth configure-docker
-  docker_tag_build_push:
-    docker:
-      - image: docker:18.09.9-dind
-    steps:
-      - checkout
-      - run:
-          name: Docker Build
-          command: |
-            docker build -t gcr.io/searce-academy/omega-trade/dev/backend:latest -f omegatrade-app/backend/dockerfile.local.emulator .
-      - run: 
-          name: Docker Push
-          command: |
-            docker push gcr.io/searce-academy/omega-trade/dev/backend:latest
-  deploy_cloud_run:
-    docker:
-      - image: google/cloud-sdk
-    steps:
-      - checkout
-      - run:
-          name: Deploy To Google Cloud Run
-          command: |
-            gcloud run deploy omegatrade-backend-dev-ci \
-            --region us-west1 \
-            --image gcr.io/searce-academy/omega-trade/dev/backend \
-            --platform managed \
-            --allow-unauthenticated \
-            --project searce-academy \
-            --port 9020
+          command: >
+            GCP_API_RESULTS=$(curl -s "$GCP_DEPLOY_ENDPOINT")
+
+            if [ "$GCP_API_RESULTS" != "Hello World!" ]; then
+              echo "Result is unexpected"
+              echo 'Result: '
+              curl -s "$GCP_DEPLOY_ENDPOINT"
+              exit 1;
+            fi
+          name: Test managed deployed service.
+orbs:
+  cloudrun: circleci/gcp-cloud-run@1.0.2
+version: 2.1
 workflows:
-  version: 2
-  build-test-and-deploy:
+  build_and_deploy_to_managed_workflow:
     jobs:
-      - deploy:
-          filters:
-            branches:
-              only:
-                - main
+      - build_and_deploy
