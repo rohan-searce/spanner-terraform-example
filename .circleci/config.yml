@@ -4,15 +4,6 @@ jobs:
       - image: 'cimg/base:stable'
     steps:
       - checkout
-      - run:
-          name: Authorize GCloud Command Line Tool
-          command: |
-            echo $GCLOUD_KEY_JSON > /tmp/key.json
-            gcloud auth activate-service-account --key-file /tmp/key.json
-      - run:
-          name: Configure Docker
-          command: |
-            gcloud auth configure-docker
       - cloudrun/init
       - cloudrun/build:
           tag: 'gcr.io/searce-academy/omega-trade/dev/backend:${CIRCLE_SHA1}'
