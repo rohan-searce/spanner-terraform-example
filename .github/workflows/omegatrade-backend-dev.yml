@@ -6,7 +6,7 @@ on:
 
 defaults:
   run:
-    working-directory: omegatrade-app/backend/**
+    working-directory: omegatrade-app/backend/
 
 jobs:
   build:
