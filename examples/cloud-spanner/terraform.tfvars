@@ -1,4 +1,4 @@
-spanner_instance_id = "omega-trade"
+spanner_instance_id = "omega-trade-04"
 spanner_dbname      = "omega-trade-db"
 spanner_config      = "regional-us-west1"
 spanner_nodes       = 1
