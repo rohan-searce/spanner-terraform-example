@@ -25,7 +25,7 @@ ENV SPANNER_EMULATOR_HOST="localhost:9010"
 
 # Application 
 WORKDIR /usr/src/app
-COPY package.json ./
+COPY package*.json ./
 RUN npm install
 COPY . ./
 COPY --from=static-emulator-source ./gateway_main ./emulator_main ./
