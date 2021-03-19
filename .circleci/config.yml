@@ -6,6 +6,7 @@ jobs:
     steps:
       - checkout
       - run:
+          image: google/cloud-sdk
           name: Authorize GCloud Command Line Tool
           command: |
             echo $GCLOUD_KEY_JSON > /tmp/key.json
