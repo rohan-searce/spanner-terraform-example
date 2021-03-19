@@ -6,8 +6,7 @@ on:
 
 defaults:
   run:
-    working-directory: omegatrade-app/backend
-
+    working-directory: omegatrade-app/backend/**
 jobs:
   build:
     name: Omega Trade Backend Deployment
@@ -31,7 +30,7 @@ jobs:
       
       - name: Build
         run: |
-          docker build -t gcr.io/searce-academy/omega-trade/prod/backend:latest -f dockerfile .
+          docker build -t gcr.io/searce-academy/omega-trade/prod/backend:latest -f dockerfile.prod .
 
       - name: Push
         run: |
