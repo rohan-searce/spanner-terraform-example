@@ -1,6 +1,7 @@
 version: 2
 jobs:
   deploy:
+    working_directory: omegatrade-app/backend/
     docker:
       - image: google/cloud-sdk
     steps:
