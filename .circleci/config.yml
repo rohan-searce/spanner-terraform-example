@@ -3,7 +3,7 @@ jobs:
   deploy_to_staging:
     docker:
       - image: google/cloud-sdk
-    working_directory: omegatrade-app/backend/
+    working_directory: ./omegatrade-app/backend/
     environment:
       - PROJECT_NAME: "searce-academy"
       - GOOGLE_PROJECT_ID: "searce-academy"
