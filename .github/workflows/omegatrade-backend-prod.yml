@@ -38,7 +38,7 @@ jobs:
           
       - name: Deploy
         run: |
-          gcloud run deploy omegatrade-backend-prod \
+          gcloud run deploy omegatrade-backend-prod-ga \
           --region us-west1 \
           --image gcr.io/searce-academy/omega-trade/prod/backend:latest \
           --platform managed \
