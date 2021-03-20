@@ -2,11 +2,11 @@ version: 2
 jobs:
   deploy_to_staging:
     docker:
-      - image: google/cloud-sdk
-    working_directory: omegatrade-app/backend/
+      - image: google/cloud-sdk 
     environment:
       - PROJECT_NAME: "searce-academy"
       - GOOGLE_PROJECT_ID: "searce-academy"
+      - WORKDIR: "omegatrade-app/backend/"
     steps:
       - checkout
       - run: 
@@ -21,8 +21,8 @@ jobs:
           name: Docker build and push
           command: |
             gcloud auth print-access-token | docker login -u oauth2accesstoken --password-stdin https://gcr.io
-            echo $working_directory
-            cd ${working_directory} && docker build -t gcr.io/searce-academy/omega-trade/dev/backend:${CIRCLE_SHA1} -f dockerfile.local.emulator .
+            echo ${WORKDIR}
+            cd ${WORKDIR} && docker build -t gcr.io/searce-academy/omega-trade/dev/backend:${CIRCLE_SHA1} -f dockerfile.local.emulator .
             docker push gcr.io/searce-academy/omega-trade/dev/backend:${CIRCLE_SHA1}
       - run: 
           name: Deploy to Cloud Run
