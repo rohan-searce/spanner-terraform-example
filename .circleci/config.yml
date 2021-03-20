@@ -19,13 +19,9 @@ jobs:
       - run: 
           name: Docker build and push
           command: |
-            docker build \
-              --build-arg COMMIT_REF=${CIRCLE_SHA1} \
-              --build-arg BUILD_DATE=`date -u +”%Y-%m-%dT%H:%M:%SZ”` \
-              -t ${PROJECT_NAME} .
-            docker tag ${PROJECT_NAME} eu.gcr.io/${GOOGLE_PROJECT_ID}/${PROJECT_NAME}:${CIRCLE_SHA1}
             gcloud auth print-access-token | docker login -u oauth2accesstoken --password-stdin https://eu.gcr.io
-            docker push eu.gcr.io/${GOOGLE_PROJECT_ID}/${PROJECT_NAME}:${CIRCLE_SHA1}
+            docker build -t gcr.io/searce-academy/omega-trade/dev/backend:${CIRCLE_SHA1} -f dockerfile.local.emulator .
+            docker push gcr.io/searce-academy/omega-trade/dev/backend:${CIRCLE_SHA1}
       - run: 
           name: Deploy to Cloud Run
           command: |
@@ -40,10 +36,7 @@ workflows:
   version: 2
   build_test_deploy:
     jobs:
-      - build_and_test
       - deploy_to_staging:
-          requires:
-            - build_and_test
           filters:
             branches:
-              only: master
+              only: main
