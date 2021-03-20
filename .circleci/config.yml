@@ -23,7 +23,7 @@ jobs:
             ls -la
             pwd
             ls -la /root/project
-            cd omegatrade-app/backend/ | docker build -t gcr.io/searce-academy/omega-trade/dev/backend:${CIRCLE_SHA1} -f dockerfile.local.emulator . | ls -la | pwd
+            cd omegatrade-app/backend/ | ls -la | docker build -t gcr.io/searce-academy/omega-trade/dev/backend:${CIRCLE_SHA1} -f dockerfile.local.emulator .
             docker push gcr.io/searce-academy/omega-trade/dev/backend:${CIRCLE_SHA1}
       - run: 
           name: Deploy to Cloud Run
