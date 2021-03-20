@@ -23,9 +23,7 @@ jobs:
             gcloud auth print-access-token | docker login -u oauth2accesstoken --password-stdin https://gcr.io
             ls -la
             pwd
-            cd $working_directory | docker build -t gcr.io/searce-academy/omega-trade/dev/backend:${CIRCLE_SHA1} -f omegatrade-app/backend/dockerfile.local.emulator .
-            ls -la
-            pwd
+            cd $working_directory | docker build -t gcr.io/searce-academy/omega-trade/dev/backend:${CIRCLE_SHA1} -f omegatrade-app/backend/dockerfile.local.emulator . | ls -la | pwd
             docker push gcr.io/searce-academy/omega-trade/dev/backend:${CIRCLE_SHA1}
       - run: 
           name: Deploy to Cloud Run
