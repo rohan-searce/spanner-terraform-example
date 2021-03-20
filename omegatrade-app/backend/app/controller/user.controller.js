@@ -91,12 +91,12 @@ exports.login = function (req, res) {
             } else
                 res.status(401).json({
                     success: false,
-                    message: 'invalid password!'
+                    message: 'Login Failed!'
                 });
         } else
             res.status(401).json({
                 success: false,
-                message: 'invalid username or password'
+                message: 'Login Failed!'
             });
         if (err)
             res.status(500).json({
