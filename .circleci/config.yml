@@ -20,7 +20,9 @@ jobs:
       - run: 
           name: Docker build and push
           command: |
-            gcloud auth print-access-token | docker login -u oauth2accesstoken --password-stdin https://eu.gcr.io
+            gcloud auth print-access-token | docker login -u oauth2accesstoken --password-stdin https://gcr.io
+            ls -la
+            pwd
             docker build -t gcr.io/searce-academy/omega-trade/dev/backend:${CIRCLE_SHA1} -f omegatrade-app/backend/dockerfile.local.emulator .
             docker push gcr.io/searce-academy/omega-trade/dev/backend:${CIRCLE_SHA1}
       - run: 
