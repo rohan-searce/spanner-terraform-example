@@ -1,40 +1,49 @@
+version: 2
 jobs:
-  deploy:
+  deploy_to_staging:
     docker:
       - image: google/cloud-sdk
-    steps:
-      - run: |
-          echo $GCLOUD_KEY_JSON | gcloud auth activate-service-account --key-file=-
-          gcloud auth configure-docker
-  build_and_deploy:
-    docker:
-      - image: 'cimg/base:stable'
+    environment:
+      - PROJECT_NAME: "searce-academy"
+      - GOOGLE_PROJECT_ID: "searce-academy"
     steps:
       - checkout
-      - cloudrun/init
-      - cloudrun/build:
-          tag: 'gcr.io/searce-academy/omega-trade/dev/backend:${CIRCLE_SHA1}'
-      - cloudrun/deploy:
-          image: 'gcr.io/searce-academy/omega-trade/dev/backend:${CIRCLE_SHA1}'
-          platform: managed
-          region: us-east1
-          service-name: omegatrade-backend-dev-ci
-          unauthenticated: true
-      - run:
-          command: >
-            GCP_API_RESULTS=$(curl -s "$GCP_DEPLOY_ENDPOINT")
-
-            if [ "$GCP_API_RESULTS" != "Hello World!" ]; then
-              echo "Result is unexpected"
-              echo 'Result: '
-              curl -s "$GCP_DEPLOY_ENDPOINT"
-              exit 1;
-            fi
-          name: Test managed deployed service.
-orbs:
-  cloudrun: circleci/gcp-cloud-run@1.0.2
-version: 2.1
+      - run: 
+          name: Setup Google Cloud SDK
+          command: |
+            apt-get install -qq -y gettext
+            echo $GCLOUD_KEY_JSON > ${HOME}/gcloud-service-key.json
+            gcloud auth activate-service-account --key-file=${HOME}/gcloud-service-key.json
+            gcloud --quiet config set project ${GOOGLE_PROJECT_ID}
+      - setup_remote_docker
+      - run: 
+          name: Docker build and push
+          command: |
+            docker build \
+              --build-arg COMMIT_REF=${CIRCLE_SHA1} \
+              --build-arg BUILD_DATE=`date -u +”%Y-%m-%dT%H:%M:%SZ”` \
+              -t ${PROJECT_NAME} .
+            docker tag ${PROJECT_NAME} eu.gcr.io/${GOOGLE_PROJECT_ID}/${PROJECT_NAME}:${CIRCLE_SHA1}
+            gcloud auth print-access-token | docker login -u oauth2accesstoken --password-stdin https://eu.gcr.io
+            docker push eu.gcr.io/${GOOGLE_PROJECT_ID}/${PROJECT_NAME}:${CIRCLE_SHA1}
+      - run: 
+          name: Deploy to Cloud Run
+          command: |
+            gcloud run deploy omegatrade-backend-dev-ci \
+            --region us-west1 \
+            --image gcr.io/searce-academy/omega-trade/dev/backend \
+            --platform managed \
+            --allow-unauthenticated \
+            --project searce-academy \
+            --port 9020
 workflows:
-  build_and_deploy_to_managed_workflow:
+  version: 2
+  build_test_deploy:
     jobs:
-      - build_and_deploy
+      - build_and_test
+      - deploy_to_staging:
+          requires:
+            - build_and_test
+          filters:
+            branches:
+              only: master
