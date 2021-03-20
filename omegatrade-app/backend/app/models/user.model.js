@@ -10,7 +10,7 @@ User.registerUser = async function (user, cb) {
     return true;
   } catch (err) {
     cb(err, null);
-      return;
+    return;
   } 
 }
 
@@ -20,14 +20,12 @@ User.findUser = async function (email, cb) {
       sql: 'SELECT userId,fullName,businessEmail,password,photoUrl,provider FROM users where businessEmail = @businessEmail',
       params: {
         businessEmail: email
-      }
+      },
+      json: true,
     };
-    let result = await database.run(query);
-    if (result[0]) {
-      var rows = result[0].map((row) => row.toJSON());
-      cb(null, rows[0]);
-      return;
-    }
+    const [users] = await database.run(query);
+    cb(null,users[0]);
+    return;
   } catch (error) {
     cb(error, null)
     return;
