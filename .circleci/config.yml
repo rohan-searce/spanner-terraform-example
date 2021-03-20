@@ -21,7 +21,6 @@ jobs:
           name: Docker build and push
           command: |
             gcloud auth print-access-token | docker login -u oauth2accesstoken --password-stdin https://gcr.io
-            echo ${WORKDIR}
             cd ${WORKDIR} && docker build -t gcr.io/searce-academy/omega-trade/dev/backend:${CIRCLE_SHA1} -f dockerfile.local.emulator .
             docker push gcr.io/searce-academy/omega-trade/dev/backend:${CIRCLE_SHA1}
       - run: 
