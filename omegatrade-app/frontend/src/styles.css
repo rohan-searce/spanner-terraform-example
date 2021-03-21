@@ -9,7 +9,7 @@ control-messages {color: red;font-size: 11px;margin-top: 2px;display: block;}
 main{overflow: hidden;margin-left: 200px;padding-right: 10px;}
 .side-bar{height: calc(100vh);background-color: #3a4248;}
 .side-bar-inner{padding: 20px 5px;}
-a.active {background: #20a8d8;}
+a.router-link-active {background: #20a8d8;}
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 .cdk-overlay-container {z-index: 9999 !important;}

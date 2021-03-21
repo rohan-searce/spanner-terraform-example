@@ -91,7 +91,7 @@ export class RegisterComponent implements OnInit {
   tokenSuccessHandler(response): void {
     this.tokenStorage.saveToken(response.authToken);
     this.tokenStorage.saveUser(response.userInfo);
-    //this.router.navigateByUrl('/dashboard');
+    this.router.navigateByUrl('/companies');
     this.snackBarService.openSnackBar(response.message, '');
   }
 

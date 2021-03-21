@@ -15,6 +15,9 @@ import { TokenStorageService } from './services/token-storage.service';
 import { SocialLoginModule, SocialAuthServiceConfig } from 'angularx-social-login';
 import { GoogleLoginProvider } from 'angularx-social-login';
 import { HttpConfigInterceptor} from './interceptor/httpconfig.interceptor';
+import { ManageCompanyComponent } from './components/company/manage-company/manage-company.component';
+import { UpdateCompanyComponent } from './components/company/update-company/update-company.component';
+import { SidebarComponent } from './components/sidebar/sidebar.component';
 
 
 
@@ -23,7 +26,10 @@ import { HttpConfigInterceptor} from './interceptor/httpconfig.interceptor';
     AppComponent,
     LoginComponent,
     ControlMessagesComponent,
-    RegisterComponent
+    RegisterComponent,
+    ManageCompanyComponent,
+    UpdateCompanyComponent,
+    SidebarComponent
   ],
   entryComponents: [
   ],
