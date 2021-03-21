@@ -3,6 +3,7 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { FormBuilder, Validators } from '@angular/forms';
 import { RestService } from '../../../services/rest.service';
 import { SnackBarService } from '../../../services/snackbar.service';
+import { take } from "rxjs/operators";
 
 @Component({
   selector: 'app-update-company',
@@ -36,6 +37,7 @@ export class UpdateCompanyComponent implements OnInit {
       this.loader = true;
       const path = (this.companyForm.get('companyId').value != '') ? 'update' : 'create';
       this.restService.postData(`companies/${path}`, this.companyForm.value)
+        .pipe(take(1))
         .subscribe(response => {
           if (response && response.success) {
             this.dialogRef.close(response);

@@ -13,7 +13,6 @@ module.exports = {
                     return res.status(401).send({ message: `Session expired, please try login again!.`, success: false });
                 }
                 if (result) {
-                    console.log(result);
                     req.decoded = result;
                     return next();
                 }
