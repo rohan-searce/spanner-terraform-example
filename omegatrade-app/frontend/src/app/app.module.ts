@@ -18,8 +18,7 @@ import { HttpConfigInterceptor} from './interceptor/httpconfig.interceptor';
 import { ManageCompanyComponent } from './components/company/manage-company/manage-company.component';
 import { UpdateCompanyComponent } from './components/company/update-company/update-company.component';
 import { SidebarComponent } from './components/sidebar/sidebar.component';
-
-
+import { SimulationComponent } from './components/simulation/simulation.component';
 
 @NgModule({
   declarations: [
@@ -29,7 +28,8 @@ import { SidebarComponent } from './components/sidebar/sidebar.component';
     RegisterComponent,
     ManageCompanyComponent,
     UpdateCompanyComponent,
-    SidebarComponent
+    SidebarComponent,
+    SimulationComponent
   ],
   entryComponents: [
   ],
