@@ -11,9 +11,12 @@ import { take } from "rxjs/operators";
   styleUrls: ['./update-company.component.css']
 })
 export class UpdateCompanyComponent implements OnInit {
+
   companyForm: any;
   loader: boolean = false;
+
   constructor(private snackBarService: SnackBarService, private restService: RestService, private formBuilder: FormBuilder, private dialogRef: MatDialogRef<UpdateCompanyComponent>, @Inject(MAT_DIALOG_DATA) public data: any) {
+    // Init the company Form
     this.companyForm = this.formBuilder.group({
       companyId: ['', []],
       companyName: ['', [Validators.required]],
@@ -32,6 +35,10 @@ export class UpdateCompanyComponent implements OnInit {
     }
   }
 
+  /**
+   * Function to create or update the company
+   * 
+   */
   submitForm() {
     if (this.companyForm.dirty && this.companyForm.valid) {
       this.loader = true;
@@ -44,8 +51,7 @@ export class UpdateCompanyComponent implements OnInit {
             this.snackBarService.openSnackBar(response.message, '');
           }
           this.loader = false;
-        },
-          error => {
+        },error => {
             this.loader = false;
             this.snackBarService.openSnackBar(error.error.message, '');
           });

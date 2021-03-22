@@ -27,44 +27,58 @@ export class ManageCompanyComponent {
     this.getCompanies();
   }
 
+  /**
+   * Function to get the company List.
+   * 
+   * return {null}
+   */
   getCompanies() {
     this.loader = true;
     this.restService.getData('companies/list')
-    .pipe(take(1))
-    .subscribe(response => {
-      this.response = response;
-      if (this.response && this.response.success) {
-        this.dataSource = new MatTableDataSource(this.response.data);
-        this.dataSource.paginator = this.paginator;
-        this.dataSource.sort = this.sort;
-      }
-      this.loader = false;
-    },
-    error => {
-      this.loader = false;
-      this.snackBarService.openSnackBar(error.error.message, '');
-    });
+      .pipe(take(1))
+      .subscribe(response => {
+        this.response = response;
+        if (this.response && this.response.success) {
+          this.dataSource = new MatTableDataSource(this.response.data);
+          this.dataSource.paginator = this.paginator;
+          this.dataSource.sort = this.sort;
+        }
+        this.loader = false;
+      },
+        error => {
+          this.loader = false;
+          this.snackBarService.openSnackBar(error.error.message, '');
+        });
   }
 
+  /**
+   * Function to delete a company.
+   * 
+   * return {null}
+   */
   deleteCompany(row) {
     if (confirm(`Are you sure you want to delete ${row.companyName}`)) {
       this.loader = true;
       this.restService.deleteData(`companies/delete/${row.companyId}`)
-      .pipe(take(1))
-      .subscribe(response => {
-        if (response && response.success) {
-          this.snackBarService.openSnackBar(response.message, '');
-          this.getCompanies();
-        }
-        this.loader = false;
-      },
-      error => {
+        .pipe(take(1))
+        .subscribe(response => {
+          if (response && response.success) {
+            this.snackBarService.openSnackBar(response.message, '');
+            this.getCompanies();
+          }
           this.loader = false;
-          this.snackBarService.openSnackBar(error.error.message, '');
-      });
+        },
+          error => {
+            this.loader = false;
+            this.snackBarService.openSnackBar(error.error.message, '');
+          });
     }
   }
 
+  /**
+   * Function to open create/edit company dialog
+   * @param row contains company object
+   */
   openCompanyDialog(row = null): void {
     const dialogRef = this.dialog.open(UpdateCompanyComponent, {
       width: '400px',
@@ -77,12 +91,16 @@ export class ManageCompanyComponent {
     });
   }
 
+  /**
+   * Function to filter the companies based on user input
+   * @param filterValue 
+   */
   applyFilter(filterValue: string) {
     filterValue = filterValue.trim(); // Remove whitespace
     filterValue = filterValue.toLowerCase(); // Datasource defaults to lowercase matches
     this.dataSource.filter = filterValue;
   }
-  
+
 }
 
 export interface CompanyData {
