@@ -5,6 +5,6 @@ const validateToken = require('../../middlewares/jwt-auth.middleware').validateT
 router.get('/list', validateToken, CompanyController.getList);
 router.post('/create', validateToken, CompanyController.create);
 router.delete('/delete/:companyId', validateToken, CompanyController.delete);
-router.post('/update', validateToken, CompanyController.update);
+router.put('/update/:companyId', validateToken, CompanyController.update);
 module.exports = router;
 

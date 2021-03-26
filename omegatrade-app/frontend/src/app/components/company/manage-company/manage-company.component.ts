@@ -1,4 +1,4 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component, ViewChild, OnInit } from '@angular/core';
 import { MatSort } from '@angular/material/sort';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
@@ -14,18 +14,31 @@ import { take } from "rxjs/operators";
   styleUrls: ['./manage-company.component.css']
 })
 
-export class ManageCompanyComponent {
+export class ManageCompanyComponent implements OnInit{
   displayedColumns: string[] = ['companyName', 'companyShortCode', 'action'];
   dataSource: MatTableDataSource<CompanyData>;
   @ViewChild(MatPaginator, { static: true }) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
+  searchInput:String;
 
-  response: any;
+  companies: any;
   loader: boolean = false;
 
   constructor(private snackBarService: SnackBarService, private restService: RestService, public dialog: MatDialog) {
+  }
+
+  /**
+  *  Function to Initiate component.
+  */
+  ngOnInit(): void {
     this.getCompanies();
   }
+
+  /*ngAfterViewInit() {
+    this.dataSource.paginator = this.paginator;
+    this.dataSource.sort = this.sort;
+  }
+  */
 
   /**
    * Function to get the company List.
@@ -37,9 +50,9 @@ export class ManageCompanyComponent {
     this.restService.getData('companies/list')
       .pipe(take(1))
       .subscribe(response => {
-        this.response = response;
-        if (this.response && this.response.success) {
-          this.dataSource = new MatTableDataSource(this.response.data);
+        this.companies = response;
+        if (this.companies && this.companies.success) {
+          this.dataSource = new MatTableDataSource(this.companies.data);
           this.dataSource.paginator = this.paginator;
           this.dataSource.sort = this.sort;
         }
@@ -47,7 +60,9 @@ export class ManageCompanyComponent {
       },
         error => {
           this.loader = false;
-          this.snackBarService.openSnackBar(error.error.message, '');
+          if(error && error.error && error.error.message){
+            this.snackBarService.openSnackBar(error.error.message, '');
+          }
         });
   }
 
@@ -93,12 +108,10 @@ export class ManageCompanyComponent {
 
   /**
    * Function to filter the companies based on user input
-   * @param filterValue 
+   * 
    */
-  applyFilter(filterValue: string) {
-    filterValue = filterValue.trim(); // Remove whitespace
-    filterValue = filterValue.toLowerCase(); // Datasource defaults to lowercase matches
-    this.dataSource.filter = filterValue;
+  applyFilter() {
+    this.dataSource.filter = this.searchInput.trim().toLowerCase();
   }
 
 }

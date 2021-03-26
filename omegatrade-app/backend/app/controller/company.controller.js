@@ -44,6 +44,7 @@ exports.create = async function (req, res) {
             });
         }
     } catch (error) {
+        console.group(error);
         return res.status(500).json({ success: false, message: "Company Insertion Failed!" });
     }
 };
@@ -56,7 +57,8 @@ exports.create = async function (req, res) {
 exports.update = async function (req, res) {
     try {
         const body = req.body;
-        if (body && body.companyId) {
+        const companyId = req.params.companyId
+        if (body && companyId) {
             await Company.update(body, function (err, data) {
                 if (err) {
                     return res.json({ success: false, message: "Error occured!" });

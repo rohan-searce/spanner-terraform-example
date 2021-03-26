@@ -20,18 +20,15 @@ export class UpdateCompanyComponent implements OnInit {
     this.companyForm = this.formBuilder.group({
       companyId: ['', []],
       companyName: ['', [Validators.required]],
-      companyShortCode: ['', [Validators.required]],
-      created_at: ['']
+      companyShortCode: ['', [Validators.required]]
     });
     if (data && data.companyId) {
       this.companyForm.setValue({
         companyId: data.companyId,
         companyName: data.companyName,
-        companyShortCode: data.companyShortCode,
-        created_at: data.created_at
+        companyShortCode: data.companyShortCode
       });
-      const ctrl = this.companyForm.get('companyShortCode');
-      ctrl.disable();
+      this.companyForm.get('companyShortCode').disable();
     }
   }
 
@@ -42,8 +39,22 @@ export class UpdateCompanyComponent implements OnInit {
   submitForm() {
     if (this.companyForm.dirty && this.companyForm.valid) {
       this.loader = true;
-      const path = (this.companyForm.get('companyId').value != '') ? 'update' : 'create';
-      this.restService.postData(`companies/${path}`, this.companyForm.value)
+      const companyId = this.companyForm.get('companyId').value;
+      const path = ( companyId != '') ? `update/${companyId}` : 'create';
+      if(companyId){
+        this.updateCompany(path);
+      }else{
+        this.createCompany(path);
+      }
+    }
+  }
+
+  /**
+   * Function to create a company
+   * 
+   */
+  createCompany(path){
+    this.restService.postData(`companies/${path}`, this.companyForm.value)
         .pipe(take(1))
         .subscribe(response => {
           if (response && response.success) {
@@ -55,10 +66,29 @@ export class UpdateCompanyComponent implements OnInit {
             this.loader = false;
             this.snackBarService.openSnackBar(error.error.message, '');
           });
-    }
+  }
+
+  /**
+   * Function to update a company
+   * 
+   */
+  updateCompany(path){
+    this.restService.putData(`companies/${path}`, this.companyForm.value)
+        .pipe(take(1))
+        .subscribe(response => {
+          if (response && response.success) {
+            this.dialogRef.close(response);
+            this.snackBarService.openSnackBar(response.message, '');
+          }
+          this.loader = false;
+        },error => {
+            this.loader = false;
+            this.snackBarService.openSnackBar(error.error.message, '');
+          });
   }
 
   ngOnInit(): void {
+  
   }
 
 }

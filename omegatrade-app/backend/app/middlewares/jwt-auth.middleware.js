@@ -4,13 +4,13 @@ module.exports = {
     validateToken: (req, res, next) => {
         const authorizationHeaader = req.headers.authorization;
         if (authorizationHeaader) {
-            const token = req.headers.authorization.split(' ')[1]; // Bearer <token>
+            const token = authorizationHeaader.split(' ')[1]; // Bearer <token>
             const options = {
                 expiresIn: process.env.EXPIRE_IN
             };
             jwt.verify(token, process.env.JWT_SECRET, options, async (err, result) => {
                 if (err) {
-                    return res.status(401).send({ message: `Session expired, please try login again!.`, success: false });
+                    return res.status(401).send({ message: `Session expired, please try to login again.`, success: false });
                 }
                 if (result) {
                     req.decoded = result;
