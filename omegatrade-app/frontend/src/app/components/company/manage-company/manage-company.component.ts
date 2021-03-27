@@ -1,4 +1,4 @@
-import { Component, ViewChild, OnInit } from '@angular/core';
+import { Component, ViewChild, OnInit ,AfterViewInit } from '@angular/core';
 import { MatSort } from '@angular/material/sort';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
@@ -14,7 +14,7 @@ import { take } from "rxjs/operators";
   styleUrls: ['./manage-company.component.css']
 })
 
-export class ManageCompanyComponent implements OnInit{
+export class ManageCompanyComponent implements OnInit , AfterViewInit{
   displayedColumns: string[] = ['companyName', 'companyShortCode', 'action'];
   dataSource: MatTableDataSource<CompanyData>;
   @ViewChild(MatPaginator, { static: true }) paginator: MatPaginator;
@@ -34,11 +34,11 @@ export class ManageCompanyComponent implements OnInit{
     this.getCompanies();
   }
 
-  /*ngAfterViewInit() {
+  ngAfterViewInit() {
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
   }
-  */
+  
 
   /**
    * Function to get the company List.
@@ -53,8 +53,6 @@ export class ManageCompanyComponent implements OnInit{
         this.companies = response;
         if (this.companies && this.companies.success) {
           this.dataSource = new MatTableDataSource(this.companies.data);
-          this.dataSource.paginator = this.paginator;
-          this.dataSource.sort = this.sort;
         }
         this.loader = false;
       },
@@ -99,7 +97,7 @@ export class ManageCompanyComponent implements OnInit{
       width: '400px',
       data: row
     });
-    dialogRef.afterClosed().subscribe(response => {
+    dialogRef.afterClosed().pipe(take(1)).subscribe(response => {
       if (response && response.success) {
         this.getCompanies()
       }
