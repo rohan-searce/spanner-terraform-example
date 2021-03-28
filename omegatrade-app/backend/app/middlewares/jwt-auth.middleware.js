@@ -5,6 +5,7 @@ module.exports = {
         const authorizationHeaader = req.headers.authorization;
         if (authorizationHeaader) {
             const token = authorizationHeaader.split(' ')[1]; // Bearer <token>
+            if (token == null) return res.status(401).send({ message: `Authentication error. Token required.`, success: false });
             const options = {
                 expiresIn: process.env.EXPIRE_IN
             };

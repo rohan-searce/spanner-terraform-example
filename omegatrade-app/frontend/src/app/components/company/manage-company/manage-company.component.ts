@@ -4,6 +4,7 @@ import { MatPaginator } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatDialog } from '@angular/material/dialog';
 import { UpdateCompanyComponent } from '../update-company/update-company.component';
+import { ConfirmDialogModel ,  ConfirmDialogComponent } from '../../confirm-dialog/confirm-dialog.component';
 import { RestService } from '../../../services/rest.service';
 import { SnackBarService } from '../../../services/snackbar.service';
 import { take } from "rxjs/operators";
@@ -39,7 +40,6 @@ export class ManageCompanyComponent implements OnInit , AfterViewInit{
     this.dataSource.sort = this.sort;
   }
   
-
   /**
    * Function to get the company List.
    * 
@@ -70,22 +70,31 @@ export class ManageCompanyComponent implements OnInit , AfterViewInit{
    * return {null}
    */
   deleteCompany(row) {
-    if (confirm(`Are you sure you want to delete ${row.companyName}`)) {
-      this.loader = true;
-      this.restService.deleteData(`companies/delete/${row.companyId}`)
-        .pipe(take(1))
-        .subscribe(response => {
-          if (response && response.success) {
-            this.snackBarService.openSnackBar(response.message, '');
-            this.getCompanies();
-          }
-          this.loader = false;
-        },
-          error => {
+    const dialogData = new ConfirmDialogModel("Confirm Action", `Are you sure you want to delete ${row.companyName}`);
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      maxWidth: "400px",
+      data: dialogData
+    });
+    dialogRef.afterClosed().pipe(take(1)).subscribe(dialogResult => {
+      if (dialogResult === true) {
+        this.loader = true;
+        this.restService.deleteData(`companies/delete/${row.companyId}`)
+          .pipe(take(1))
+          .subscribe(response => {
+            if (response && response.success) {
+              this.snackBarService.openSnackBar(response.message, '');
+              this.getCompanies();
+            }
             this.loader = false;
-            this.snackBarService.openSnackBar(error.error.message, '');
-          });
-    }
+          },
+            error => {
+              this.loader = false;
+              if(error && error.error && error.error.message){
+                this.snackBarService.openSnackBar(error.error.message, '');
+              }
+            });
+      }
+    });
   }
 
   /**

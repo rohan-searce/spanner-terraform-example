@@ -19,6 +19,7 @@ import { ManageCompanyComponent } from './components/company/manage-company/mana
 import { UpdateCompanyComponent } from './components/company/update-company/update-company.component';
 import { SidebarComponent } from './components/sidebar/sidebar.component';
 import { HeaderComponent } from './components/header/header.component';
+import { ConfirmDialogComponent } from './components/confirm-dialog/confirm-dialog.component';
 
 
 
@@ -31,7 +32,8 @@ import { HeaderComponent } from './components/header/header.component';
     ManageCompanyComponent,
     UpdateCompanyComponent,
     SidebarComponent,
-    HeaderComponent
+    HeaderComponent,
+    ConfirmDialogComponent
   ],
   entryComponents: [
   ],

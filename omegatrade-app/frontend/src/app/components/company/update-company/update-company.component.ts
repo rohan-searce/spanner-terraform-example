@@ -64,7 +64,9 @@ export class UpdateCompanyComponent implements OnInit {
           this.loader = false;
         },error => {
             this.loader = false;
-            this.snackBarService.openSnackBar(error.error.message, '');
+            if(error && error.error && error.error.message){
+              this.snackBarService.openSnackBar(error.error.message, '');
+            }
           });
   }
 
@@ -83,7 +85,9 @@ export class UpdateCompanyComponent implements OnInit {
           this.loader = false;
         },error => {
             this.loader = false;
-            this.snackBarService.openSnackBar(error.error.message, '');
+            if(error && error.error && error.error.message){
+              this.snackBarService.openSnackBar(error.error.message, '');
+            }
           });
   }
 
