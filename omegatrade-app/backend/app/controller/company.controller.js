@@ -10,7 +10,7 @@ exports.getList = async function (req, res) {
     try {
         await Company.getAll(function (err, data) {
             if (err)
-                return res.json({ success: false, message: "Error occured while fetching all Company" });
+                return res.json({ success: false, message: "Something went wrong" });
             if (data) {
                 return res.status(200).json({ success: true, data: data });
             }
@@ -28,7 +28,7 @@ exports.getList = async function (req, res) {
 exports.create = async function (req, res) {
     try {
         const body = req.body;
-        const company = await Company.checkCompany(body.companyName, body.companyShortCode);
+        const [ company ] = await Company.checkCompany(body.companyName, body.companyShortCode);
         if (company && company.length > 0) {
             return res.status(409).json({ success: false, message: "company already exists!" });
         } else {
@@ -36,7 +36,7 @@ exports.create = async function (req, res) {
             body.created_at = 'spanner.commit_timestamp()';
             await Company.create(body, function (err, data) {
                 if (err) {
-                    return res.json({ success: false, message: "Error occured while creating company" });
+                    return res.json({ success: false, message: "Something went wrong" });
                 }
                 if (data) {
                     return res.status(200).json({ success: true, message: "company created successfully" });
@@ -44,7 +44,7 @@ exports.create = async function (req, res) {
             });
         }
     } catch (error) {
-        return res.status(500).json({ success: false, message: "Company Insertion Failed!" });
+        return res.status(500).json({ success: false, message: "Something went wrong" });
     }
 };
 
@@ -56,10 +56,11 @@ exports.create = async function (req, res) {
 exports.update = async function (req, res) {
     try {
         const body = req.body;
-        if (body && body.companyId) {
+        const companyId = req.params.companyId
+        if (body && companyId) {
             await Company.update(body, function (err, data) {
                 if (err) {
-                    return res.json({ success: false, message: "Error occured!" });
+                    return res.json({ success: false, message: "Something went wrong" });
                 }
                 else {
                     return res.status(200).json({ success: true, message: "Company details updated sucessfully!" });
@@ -69,7 +70,7 @@ exports.update = async function (req, res) {
             res.status(501).json({ success: false, message: "Invalid data" });
         }
     } catch (error) {
-        return res.status(500).json({ success: false, message: "Company updation Failed!" });
+        return res.status(500).json({ success: false, message: "Something went wrong" });
     }
 }
 
@@ -83,14 +84,14 @@ exports.delete = async function (req, res) {
         const companyId = req.params.companyId;
         await Company.delete(companyId, function (err, data) {
             if (err) {
-                res.json({ success: false, message: "something went wrong!" });
+                res.json({ success: false, message: "Something went wrong" });
             }
             if (data) {
                 res.status(200).json({success: true,message: "company deleted!"});
             }
         });
     } catch (error) {
-        return res.status(500).json({ success: false, message: "Company deletion failed!" });
+        return res.status(500).json({ success: false, message: "Something went wrong" });
     }
 };
 

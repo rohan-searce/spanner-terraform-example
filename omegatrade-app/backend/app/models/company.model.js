@@ -1,11 +1,10 @@
 'user strict';
 const database = require('./../config/database.js');
-var Company = function () { };
+const Company = function () { };
 
 Company.getAll = async function (cb) {
     try {
-        const query = { sql: 'select companyId , companyName , companyShortCode , created_at from companies', json: true, };
-        const [companies] = await database.run(query);
+        const [ companies ] = await database.run({ sql: 'select companyId , companyName , companyShortCode , created_at from companies', json: true, });
         cb(null, companies)
     } catch (error) {
         cb(error, null)
@@ -24,17 +23,16 @@ Company.create = async function (data, result) {
 Company.checkCompany = async function (companyName, companyShortCode) {
     try {
         const query = {
-            sql: 'select companyName , companyShortCode from companies where companyName = @companyName or companyShortCode = @companyShortCode',
+            sql: 'select companyName , companyShortCode from companies where companyName = @companyName or companyShortCode = @companyShortCode LIMIT 1',
             params: {
                 companyName: companyName,
                 companyShortCode: companyShortCode
             },
             json: true
-        };
-        const [result] = await database.run(query);
-        return result;
+        }
+        return await database.run(query);
     } catch (error) {
-        throw ("Error Occured!", error);
+        throw ("Error Occurred!", error);
     }
 };
 

@@ -19,6 +19,10 @@ import { ManageCompanyComponent } from './components/company/manage-company/mana
 import { UpdateCompanyComponent } from './components/company/update-company/update-company.component';
 import { SidebarComponent } from './components/sidebar/sidebar.component';
 import { SimulationComponent } from './components/simulation/simulation.component';
+import { HeaderComponent } from './components/header/header.component';
+import { ConfirmDialogComponent } from './components/confirm-dialog/confirm-dialog.component';
+
+
 
 @NgModule({
   declarations: [
@@ -29,7 +33,9 @@ import { SimulationComponent } from './components/simulation/simulation.componen
     ManageCompanyComponent,
     UpdateCompanyComponent,
     SidebarComponent,
-    SimulationComponent
+    SimulationComponent,
+    HeaderComponent,
+    ConfirmDialogComponent
   ],
   entryComponents: [
   ],

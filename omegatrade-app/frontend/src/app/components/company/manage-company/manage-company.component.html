@@ -1,6 +1,6 @@
 <app-header></app-header>
 <app-sidebar></app-sidebar>
-<div class="spinner" *ngIf="this.loader">
+<div class="spinner" *ngIf="loader">
   <mat-spinner></mat-spinner>
 </div>
 <main>
@@ -13,7 +13,7 @@
       </div>
       <div class="col-6 table-options">
         <mat-form-field>
-          <input matInput (keyup)="applyFilter($event.target.value)" placeholder="Search">
+          <input matInput [(ngModel)]="searchInput" (ngModelChange)="applyFilter()" placeholder="Search">
         </mat-form-field>
         <button mat-flat-button color="primary" class="add-company-btn" (click)="openCompanyDialog()">Add
           Company</button>
@@ -38,7 +38,7 @@
           <ng-container matColumnDef="action">
             <th mat-header-cell *matHeaderCellDef mat-sort-header> Action</th>
             <td mat-cell *matCellDef="let row" style="padding:5px;">
-              <a href="javascript:void(0)" class="edit-company-btn" (click)="this.openCompanyDialog(row)"
+              <a href="javascript:void(0)" class="edit-company-btn" (click)="openCompanyDialog(row)"
                 title="Edit Company"><i class="material-icons">edit</i></a>&nbsp;
               <a href="javascript:void(0)" class="delete-company-btn" title="Delete" (click)="deleteCompany(row)"><i
                   class="material-icons">delete</i></a>
