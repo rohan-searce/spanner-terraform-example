@@ -3,6 +3,7 @@ const Simulation = require('../models/simulation.model')
 const Company = require('../models/company.model')
 const { v4: uuidv4 } = require('uuid');
 const fakeStockmarketgenerator = require('fake-stock-market-generator');
+const { Spanner } = require('@google-cloud/spanner')
 
 /**
  * Function to list all simulations
@@ -37,7 +38,8 @@ exports.updateSimulation = async function (req, res) {
             if (err) {
                 res.json({ success: false, message: "something went wrong" });
             }
-            if (data) { res.status(200).json({ success: true, message: `Simulation ${(body.status == true) ? 'Started' : 'Stopped'}  sucessfully` });
+            if (data) {
+                res.status(200).json({ success: true, message: `Simulation ${(body.status == true) ? 'Started' : 'Stopped'}  sucessfully` });
             }
         });
     } else {
@@ -54,8 +56,8 @@ exports.deleteSimulation = async function (req, res) {
     let sId = req.params.sId;
     if (sId) {
         await Simulation.deleteById(sId, function (err, data) {
-            if (err) { res.json({ success: false, message: "something went wrong" });}
-            if (data) { res.status(200).json({ success: true, message: `deleted sucessfully`});}
+            if (err) { res.json({ success: false, message: "something went wrong" }); }
+            if (data) { res.status(200).json({ success: true, message: `deleted sucessfully` }); }
         });
     } else {
         res.status(501).json({ success: false, message: "Invalid data" });
@@ -66,8 +68,7 @@ exports.deleteSimulation = async function (req, res) {
 exports.startSimulation = async function (req, res) {
     try {
         const body = req.body;
-        const { Spanner } = require('@google-cloud/spanner')
-        const [ result ] = await Company.findById(body.companyId);
+        const [result] = await Company.findById(body.companyId);
         if (result && result.length > 0) {
             const company = result[0];
             const interval = body.timeInterval * 1000;
@@ -77,27 +78,28 @@ exports.startSimulation = async function (req, res) {
                 var i = 0;
                 var intervalId = setInterval(async () => {
                     const stockData = {};
-                    stockData.currentValue = Spanner.float(stock[i].price)
+                    stockData.currentValue = genNumValues(stock[i].price)
                     stockData.companyStockId = uuidv4();
                     stockData.companyId = body.companyId;
                     stockData.companyShortCode = company.companyShortCode;
-                    stockData.shares = Spanner.float(randomInt(5, 30))
+                    stockData.shares = genNumValuesBetween(5, 30);
                     stockData.date = Spanner.float(new Date().getTime());
-                    stockData.open = Spanner.float(randDec(5, 4000, 2))
-                    stockData.volume = Spanner.float(randDec(30, 60, 2))
-                    stockData.close = Spanner.float(randDec(5, 4000, 2))
-                    stockData.dayHigh = Spanner.float(randDec(5, 4000, 2))
-                    stockData.dayLow = Spanner.float(randDec(5, 4000, 2))
-                    stockData.adjHigh = Spanner.float(randDec(5, 4000, 2))
-                    stockData.adjLow = Spanner.float(randDec(5, 4000, 2))
-                    stockData.adjClose = Spanner.float(randDec(5, 4000, 2))
-                    stockData.adjOpen = Spanner.float(randDec(5, 4000, 2))
-                    stockData.adjVolume = Spanner.float(randDec(5, 4000, 2))
+                    stockData.open = genNumValuesBetween(5, 4000, 2);
+                    stockData.volume = genNumValuesBetween(30, 60, 2);
+                    stockData.close = genNumValuesBetween(5, 4000, 2);
+                    stockData.dayHigh = genNumValuesBetween(5, 4000, 2);
+                    stockData.dayLow = genNumValuesBetween(5, 4000, 2);
+                    stockData.adjHigh = genNumValuesBetween(5, 4000, 2);
+                    stockData.adjLow = genNumValuesBetween(5, 4000, 2);
+                    stockData.adjClose = genNumValuesBetween(5, 10, 2);
+                    stockData.adjOpen = genNumValuesBetween(5, 4000, 2);
+                    stockData.adjVolume = genNumValuesBetween(5, 4000, 2);
                     stockData.timestamp = 'spanner.commit_timestamp()';
+                    console.log(stockData);
                     const simulation = await Simulation.findByCompanyId(body.companyId, sId);
                     if (simulation[0] && simulation[0].status) {
                         console.log('simulation created', 'loop count ' + i + ' companyId ' + body.companyId);
-                        Company.createStockData(stockData);
+                        await Company.createStockData(stockData);
                     } else {
                         console.log('simulation stopped', body.companyId);
                         clearInterval(intervalId)
@@ -115,15 +117,27 @@ exports.startSimulation = async function (req, res) {
         return res.status(200).json({ success: true });
     }
 }
-const randDec = (min, max, decimalPlaces) => {
-    const rand = Math.random() * (max - min) + min;
-    const power = Math.pow(10, decimalPlaces);
-    return Math.floor(rand * power) / power;
+
+/**
+ * Returns a Spanner numeric Object.
+ */
+function genNumValues(value) {
+  return Spanner.numeric(value.toString());
 }
 
-const randomInt = (min, max) => {
-    return Math.floor(Math.random() * (max - min + 1) + min);
+/**
+ * Returns a random number between min (inclusive) and max (inclusive)
+ */
+function genNumValuesBetween(min, max, scale = null) {
+const rand = Math.random() * (max - min) + min;
+if (scale) {
+    const power = Math.pow(10, scale);
+    return Spanner.numeric((Math.floor(rand * power) / power).toString());
 }
+return Spanner.numeric(Math.floor(rand).toString());
+}
+
+
 
 
 
