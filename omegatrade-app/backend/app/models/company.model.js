@@ -56,4 +56,28 @@ Company.update = async function (params, cb) {
     }
 }
 
+Company.findById = async function (companyId) {
+    try {
+        const query = {
+            sql: 'select * from companies where companyId = @companyId',
+            params: {
+                companyId: companyId,
+            },
+            json: true
+        }
+        return await database.run(query);
+    } catch (error) {
+        throw ("Error Occurred!", error);
+    }
+}
+
+Company.createStockData = async function (stockData) {
+    try {
+        await database.table('companyStocks').insert(stockData)
+        return true;
+    } catch (error) {
+        return false;
+    }
+};
+
 module.exports = Company

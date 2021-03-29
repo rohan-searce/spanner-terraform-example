@@ -33,7 +33,7 @@
             <mat-form-field appearance="standard">
               <mat-label>Select Interval</mat-label>
               <mat-select formControlName="timeInterval" id="timeInterval">
-                <mat-option *ngFor="let time of this.time" [value]="tme">{{ time }}</mat-option>
+                <mat-option *ngFor="let time of this.time" [value]="time">{{ time }}</mat-option>
               </mat-select>
               <mat-hint>In seconds</mat-hint>
             </mat-form-field>
