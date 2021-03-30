@@ -14,6 +14,7 @@ export class UpdateCompanyComponent implements OnInit {
 
   companyForm: any;
   loader: boolean = false;
+  action:String = "Add Company";
 
   constructor(private snackBarService: SnackBarService, private restService: RestService, private formBuilder: FormBuilder, private dialogRef: MatDialogRef<UpdateCompanyComponent>, @Inject(MAT_DIALOG_DATA) public data: any) {
     // Init the company Form
@@ -29,6 +30,7 @@ export class UpdateCompanyComponent implements OnInit {
         companyShortCode: data.companyShortCode
       });
       this.companyForm.get('companyShortCode').disable();
+      this.action = `Edit Company ${data.companyName}`
     }
   }
 

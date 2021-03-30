@@ -70,7 +70,7 @@ export class ManageCompanyComponent implements OnInit , AfterViewInit{
    * return {null}
    */
   deleteCompany(row) {
-    const dialogData = new ConfirmDialogModel("Confirm Action", `Are you sure you want to delete ${row.companyName}`);
+    const dialogData = new ConfirmDialogModel("Confirm Action", `Are you sure you want to delete company ${row.companyName}?`);
     const dialogRef = this.dialog.open(ConfirmDialogComponent, {
       maxWidth: "400px",
       data: dialogData
@@ -82,8 +82,12 @@ export class ManageCompanyComponent implements OnInit , AfterViewInit{
           .pipe(take(1))
           .subscribe(response => {
             if (response && response.success) {
+              const index = this.companies.data.findIndex(x => x.companyId === row.companyId);
+              if (index > -1){
+                this.companies.data.splice(index, 1);
+                this.dataSource = new MatTableDataSource(this.companies.data);
+              }
               this.snackBarService.openSnackBar(response.message, '');
-              this.getCompanies();
             }
             this.loader = false;
           },
