@@ -97,9 +97,11 @@ exports.startSimulation = async function (req, res) {
                     stockData.timestamp = 'spanner.commit_timestamp()';
                     console.log(stockData);
                     const simulation = await Simulation.findByCompanyId(body.companyId, sId);
-                    if (simulation[0] && simulation[0].status) {
-                        console.log('simulation created', 'loop count ' + i + ' companyId ' + body.companyId);
-                        await Company.createStockData(stockData);
+                    if (simulation && simulation[0]) {
+                        if(simulation[0].status){
+                            console.log('simulation created', 'loop count ' + i + ' companyId ' + body.companyId);
+                            await Company.createStockData(stockData);
+                        }
                     } else {
                         console.log('simulation stopped', body.companyId);
                         clearInterval(intervalId)

@@ -18,13 +18,13 @@
 
   <div class="container-fluid mt-20">
     <mat-card>
-      <form class="login-form" [formGroup]="simulateForm" (submit)="simulate()">
+      <form class="login-form" [formGroup]="simulateForm" #formDirective="ngForm"  (submit)="simulate(formDirective)">
         <div class="row">
           <div class="col-3 ">
             <mat-form-field appearance="standard">
               <mat-label>Select Company</mat-label>
               <mat-select formControlName="companyId" id="companyId">
-                <mat-option *ngFor="let company of this.companies" [disabled]="isAlreadyStarted(company.companyId)"
+                <mat-option *ngFor="let company of companies" [disabled]="isAlreadyStarted(company.companyId)"
                   [value]="company.companyId">{{ company.companyName }}</mat-option>
               </mat-select>
             </mat-form-field>
@@ -33,7 +33,7 @@
             <mat-form-field appearance="standard">
               <mat-label>Select Interval</mat-label>
               <mat-select formControlName="timeInterval" id="timeInterval">
-                <mat-option *ngFor="let time of this.time" [value]="time">{{ time }}</mat-option>
+                <mat-option *ngFor="let time of interval" [value]="time">{{ time }}</mat-option>
               </mat-select>
               <mat-hint>In seconds</mat-hint>
             </mat-form-field>
@@ -42,13 +42,13 @@
             <mat-form-field appearance="standard">
               <mat-label>Number of Records</mat-label>
               <mat-select formControlName="data" id="data">
-                <mat-option *ngFor="let data of this.datas" [value]="data">{{ data }}</mat-option>
+                <mat-option *ngFor="let data of datas" [value]="data">{{ data }}</mat-option>
               </mat-select>
             </mat-form-field>
           </div>
           <div class="col-1 mat-actions ">
             <button type="submit" class="start-simulate-btn" matTooltip="Start Simulation" mat-stroked-button
-              [disabled]="!this.simulateForm.valid">Simulate</button>
+              [disabled]="!simulateForm.valid">Simulate</button>
           </div>
 
         </div>
@@ -65,7 +65,7 @@
       </div>
       <div class="col-6 table-options">
         <mat-form-field>
-          <input matInput (keyup)="applyFilter($event.target.value)" placeholder="Search">
+          <input matInput [(ngModel)]="searchInput" (ngModelChange)="applyFilter()" placeholder="Search">
         </mat-form-field>
       </div>
     </div>
@@ -94,16 +94,16 @@
             <th mat-header-cell *matHeaderCellDef mat-sort-header> Action</th>
             <td mat-cell *matCellDef="let row" style="padding:5px;">
               <a href="javascript:void(0)" matTooltip="start simulation" *ngIf="!row.status" class="start"
-                (click)="this.updateSimulation(row)">
+                (click)="updateSimulation(row)">
                 <mat-icon aria-hidden="false" aria-label="Example home icon">play_circle</mat-icon>
               </a>
               <a href="javascript:void(0)" matTooltip="stop simulation" *ngIf="row.status" class="stop"
-                (click)="this.updateSimulation(row)">
+                (click)="updateSimulation(row)">
                 <mat-icon aria-hidden="false" aria-label="Example home icon">stop_circle</mat-icon>
               </a>
               &nbsp;&nbsp;
               <a href="javascript:void(0)" class="delete-company-btn" matTooltip="Delete simulation"
-                (click)="this.deleteSimulation(row)"><i class="material-icons">delete</i></a>
+                (click)="deleteSimulation(row)"><i class="material-icons">delete</i></a>
             </td>
           </ng-container>
 
