@@ -1,4 +1,4 @@
-import { Component, OnInit, AfterViewInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { MatSort } from '@angular/material/sort';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
@@ -13,7 +13,7 @@ import { take } from 'rxjs/operators';
   styleUrls: ['./simulation.component.css']
 })
 
-export class SimulationComponent implements OnInit , AfterViewInit {
+export class SimulationComponent implements OnInit  {
 
   displayedColumns: string[] = ['companyName', 'companyShortCode', 'status', 'action'];
   dataSource: MatTableDataSource<SimuationData>;
@@ -24,8 +24,8 @@ export class SimulationComponent implements OnInit , AfterViewInit {
   companies: any;
   simulateForm: any;
   simulations: any;
-  interval = [5, 10, 15, 30, 60];
-  datas = [100, 200, 400, 600];
+  interval = [5, 10, 15];
+  datas = [50, 100, 150, 200];
   loader: boolean = false;
   
   constructor(private snackBarService: SnackBarService, private restService: RestService, private formBuilder: FormBuilder) {
@@ -41,7 +41,7 @@ export class SimulationComponent implements OnInit , AfterViewInit {
     this.getSimulations();
   }
 
-  ngAfterViewInit() {
+  initializeSortAndPagination() {
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
   }
@@ -56,23 +56,24 @@ export class SimulationComponent implements OnInit , AfterViewInit {
           }
         },
         error => {
-          if(error && error.error && error.error.message){
+          if (error && error.error && error.error.message) {
             this.snackBarService.openSnackBar(error.error.message, '');
           }
         });
   }
 
-  deleteSimulation(row) {
-    this.restService.deleteData(`simulations/delete/${row.sId}`)
+  deleteSimulation(simulation) {
+    this.restService.deleteData(`simulations/delete/${simulation.sId}`)
       .pipe(take(1))
       .subscribe(
         response => {
           if (response && response.success) {
             this.snackBarService.openSnackBar(response.message, '');
-            const index = this.simulations.findIndex(x => x.sId === row.sId);
+            const index = this.dataSource.data.findIndex(simulationObj => simulationObj.sId === simulation.sId);
             if (index > -1){
-              this.simulations.splice(index, 1)
-              this.dataSource = new MatTableDataSource(this.simulations);
+              this.dataSource.data.splice(index, 1)
+              this.dataSource = new MatTableDataSource(this.dataSource.data);
+              this.initializeSortAndPagination();
             }
           }
           this.loader = false;
@@ -113,8 +114,8 @@ export class SimulationComponent implements OnInit , AfterViewInit {
       .subscribe(
         response => {
           if (response && response.success) {
-            this.simulations = response.data;
-            this.dataSource = new MatTableDataSource(this.simulations);
+            this.dataSource = new MatTableDataSource(response.data);
+            this.initializeSortAndPagination();
           }
           this.loader = false;
         },
@@ -126,9 +127,9 @@ export class SimulationComponent implements OnInit , AfterViewInit {
         });
   }
 
-  updateSimulation(params) {
+  updateSimulation(simulation) {
     this.loader = true;
-    const payLoad = { sId: params.sId, status: (params.status) ? false : true }
+    const payLoad = { sId: simulation.sId, status: (simulation.status) ? false : true }
     this.restService.putData('simulations/update', payLoad)
       .pipe(take(1))
       .subscribe(
@@ -149,7 +150,7 @@ export class SimulationComponent implements OnInit , AfterViewInit {
   }
 
   isAlreadyStarted(id: string) {
-    if (this.simulations && this.simulations.find(el => el.companyId === id)) {
+    if (this.simulations && this.simulations.find(simulation => simulation.companyId === id)) {
       return true;
     }
     return false;
