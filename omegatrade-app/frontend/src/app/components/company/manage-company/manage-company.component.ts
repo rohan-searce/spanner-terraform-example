@@ -21,8 +21,6 @@ export class ManageCompanyComponent implements OnInit , AfterViewInit{
   @ViewChild(MatPaginator, { static: true }) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
   searchInput:String;
-
-  companies: any;
   loader: boolean = false;
 
   constructor(private snackBarService: SnackBarService, private restService: RestService, public dialog: MatDialog) {
@@ -35,7 +33,8 @@ export class ManageCompanyComponent implements OnInit , AfterViewInit{
     this.getCompanies();
   }
 
-  ngAfterViewInit() {
+  
+  initDataSource() {
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
   }
@@ -50,9 +49,9 @@ export class ManageCompanyComponent implements OnInit , AfterViewInit{
     this.restService.getData('companies/list')
       .pipe(take(1))
       .subscribe(response => {
-        this.companies = response;
-        if (this.companies && this.companies.success) {
-          this.dataSource = new MatTableDataSource(this.companies.data);
+        if (response && response.success) {
+          this.dataSource = new MatTableDataSource(response.data);
+          this.initDataSource();
         }
         this.loader = false;
       },
@@ -69,8 +68,8 @@ export class ManageCompanyComponent implements OnInit , AfterViewInit{
    * 
    * return {null}
    */
-  deleteCompany(row) {
-    const dialogData = new ConfirmDialogModel("Confirm Action", `Are you sure you want to delete company ${row.companyName}?`);
+  deleteCompany(companyObj) {
+    const dialogData = new ConfirmDialogModel("Confirm Action", `Are you sure you want to delete company ${companyObj.companyName}?`);
     const dialogRef = this.dialog.open(ConfirmDialogComponent, {
       maxWidth: "400px",
       data: dialogData
@@ -78,14 +77,15 @@ export class ManageCompanyComponent implements OnInit , AfterViewInit{
     dialogRef.afterClosed().pipe(take(1)).subscribe(dialogResult => {
       if (dialogResult === true) {
         this.loader = true;
-        this.restService.deleteData(`companies/delete/${row.companyId}`)
+        this.restService.deleteData(`companies/delete/${companyObj.companyId}`)
           .pipe(take(1))
           .subscribe(response => {
             if (response && response.success) {
-              const index = this.companies.data.findIndex(x => x.companyId === row.companyId);
+              const index = this.dataSource.data.findIndex(company => company.companyId === companyObj.companyId);
               if (index > -1){
-                this.companies.data.splice(index, 1);
-                this.dataSource = new MatTableDataSource(this.companies.data);
+                this.dataSource.data.splice(index, 1);
+                this.dataSource = new MatTableDataSource(this.dataSource.data);
+                this.initDataSource();
               }
               this.snackBarService.openSnackBar(response.message, '');
             }
