@@ -77,13 +77,16 @@ exports.startSimulation = async function (req, res) {
             if (sId) {
                 var i = 0;
                 var intervalId = setInterval(async () => {
+
                     const stockData = {};
-                    stockData.currentValue = genNumValues(stock[i].price)
+                    
                     stockData.companyStockId = uuidv4();
                     stockData.companyId = body.companyId;
                     stockData.companyShortCode = company.companyShortCode;
-                    stockData.shares = genNumValuesBetween(5, 30);
                     stockData.date = Spanner.float(new Date().getTime());
+
+                    stockData.currentValue = genNumValues(stock[i].price)
+                    stockData.shares = genNumValuesBetween(5, 30);
                     stockData.open = genNumValuesBetween(5, 4000, 2);
                     stockData.volume = genNumValuesBetween(30, 60, 2);
                     stockData.close = genNumValuesBetween(5, 4000, 2);
@@ -94,8 +97,10 @@ exports.startSimulation = async function (req, res) {
                     stockData.adjClose = genNumValuesBetween(5, 10, 2);
                     stockData.adjOpen = genNumValuesBetween(5, 4000, 2);
                     stockData.adjVolume = genNumValuesBetween(5, 4000, 2);
+
                     stockData.timestamp = 'spanner.commit_timestamp()';
                     console.log(stockData);
+                    
                     const simulation = await Simulation.findByCompanyId(body.companyId, sId);
                     if (simulation && simulation[0]) {
                         if(simulation[0].status){
@@ -106,9 +111,11 @@ exports.startSimulation = async function (req, res) {
                         console.log('simulation stopped', body.companyId);
                         clearInterval(intervalId)
                     }
+
                     if (i === (body.data - 1)) {
                         clearInterval(intervalId)
                     }
+
                     i++;
                 }, interval);
                 return res.status(200).json({ success: true, row: company });

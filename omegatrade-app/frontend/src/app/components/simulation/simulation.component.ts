@@ -130,7 +130,7 @@ export class SimulationComponent implements OnInit  {
   updateSimulation(simulation) {
     this.loader = true;
     const payLoad = { sId: simulation.sId, status: (simulation.status) ? false : true }
-    this.restService.putData('simulations/update', payLoad)
+    this.restService.putData(`simulations/update`, payLoad)
       .pipe(take(1))
       .subscribe(
         response => {
@@ -150,7 +150,7 @@ export class SimulationComponent implements OnInit  {
   }
 
   isAlreadyStarted(id: string) {
-    if (this.simulations && this.simulations.find(simulation => simulation.companyId === id)) {
+    if (this.dataSource.data && this.dataSource.data.find(simulation => simulation.companyId === id)) {
       return true;
     }
     return false;
@@ -163,10 +163,11 @@ export class SimulationComponent implements OnInit  {
 }
 
 export interface SimuationData {
-  sID: string;
+  sId: string;
   companyName: string;
   companyShortCode: string;
   status: boolean;
+  companyId:String;
 }
 
 

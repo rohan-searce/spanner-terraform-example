@@ -4,7 +4,7 @@ const validateToken = require('../../middlewares/jwt-auth.middleware').validateT
 
 router.get('/list', validateToken, SimulationController.getList);
 router.post('/start',validateToken, SimulationController.startSimulation);
-router.post('/update',validateToken, SimulationController.updateSimulation);
+router.put('/update',validateToken, SimulationController.updateSimulation);
 router.delete('/delete/:sId',validateToken, SimulationController.deleteSimulation);
 
 module.exports = router;
