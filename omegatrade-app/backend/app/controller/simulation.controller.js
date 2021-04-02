@@ -77,6 +77,7 @@ exports.startSimulation = async function (req, res) {
             if (sId) {
                 var i = 0;
                 var intervalId = setInterval(async () => {
+
                     // Generating RandomData to match with stock logic
                     const randomValue = generateRandomValue(100, 110);
                     const dayHigh = randomValue + generateRandomValue();
@@ -93,6 +94,7 @@ exports.startSimulation = async function (req, res) {
                     stockData.close = spannerNumericRandValBetween(dayHigh, dayLow, 2);
                     stockData.volume = spannerNumericRandValBetween(2000, 4000, 3);
                     stockData.timestamp = 'spanner.commit_timestamp()';
+                    console.log('stockData.companyShortCode',i);
                     const simulation = await Simulation.findByCompanyId(body.companyId, sId);
                     if (simulation && simulation[0]) {
                         if (simulation[0].status) {
