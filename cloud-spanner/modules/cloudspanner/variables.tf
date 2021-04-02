@@ -51,7 +51,7 @@ variable "ddl_queries" {
     default = [
       "CREATE TABLE users ( userId STRING(36) NOT NULL, businessEmail STRING(50), fullName STRING(36), password STRING(100), photoUrl STRING(250), provider STRING(20),) PRIMARY KEY(userId)",
       "CREATE TABLE companies (companyId STRING(36) NOT NULL, companyName STRING(30), companyShortCode STRING(15), created_at TIMESTAMP NOT NULL OPTIONS (allow_commit_timestamp = true), ) PRIMARY KEY(companyId)",
-      "CREATE TABLE companyStocks (companyStockId STRING(36) NOT NULL, companyId STRING(36) NOT NULL, companyShortCode STRING(10), exchangeName STRING(50), exchangeMic STRING(50), shares NUMERIC, requestId STRING(15), open NUMERIC, volume NUMERIC, currentValue NUMERIC, date FLOAT64, close NUMERIC, dayHigh NUMERIC, dayLow NUMERIC, adjHigh NUMERIC, adjLow NUMERIC, adjClose NUMERIC, adjOpen NUMERIC, adjVolume NUMERIC, timestamp TIMESTAMP NOT NULL OPTIONS (allow_commit_timestamp=true)) PRIMARY KEY(companyStockId)",
+      "CREATE TABLE companyStocks (companyStockId STRING(36) NOT NULL, companyId STRING(36) NOT NULL, companyShortCode STRING(36), open NUMERIC, volume NUMERIC, currentValue NUMERIC, date FLOAT64, close NUMERIC, dayHigh NUMERIC, dayLow NUMERIC, timestamp TIMESTAMP NOT NULL OPTIONS (allow_commit_timestamp=true)) PRIMARY KEY(companyStockId)",
       "CREATE TABLE simulations (sId STRING(36) NOT NULL, companyId STRING(36) NOT NULL, status BOOL, createdAt TIMESTAMP NOT NULL OPTIONS (allow_commit_timestamp = true),) PRIMARY KEY(sId)",
       ]
     description = "An optional list of DDL statements to run inside the newly created database. Statements can create tables, indexes, etc."
