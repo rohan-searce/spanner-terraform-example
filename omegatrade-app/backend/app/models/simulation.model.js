@@ -5,7 +5,7 @@ const Simulation = function () { };
 
 Simulation.getAll = async function (cb) {
     try {
-        const [result] = await database.run({ sql: 'select sml.sId as sId,sml.companyId as companyId, sml.status as status, cy.companyName as companyName, cy.companyShortCode as companyShortCode from simulations sml LEFT JOIN companies cy ON sml.companyId = cy.companyId', json: true });
+        const [result] = await database.run({ sql: 'select sml.sId as sId,sml.companyId as companyId, sml.status as status, cy.companyName as companyName, cy.companyShortCode as companyShortCode from simulations sml LEFT JOIN companies cy ON sml.companyId = cy.companyId LIMIT 3', json: true });
         cb(null, result)
     } catch (error) {
         cb(error, null)

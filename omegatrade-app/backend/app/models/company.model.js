@@ -32,7 +32,7 @@ Company.checkCompany = async function (companyName, companyShortCode) {
         }
         return await database.run(query);
     } catch (error) {
-        throw ("Error Occurred!", error);
+        throw ("Error:", error);
     }
 };
 
@@ -67,7 +67,7 @@ Company.findById = async function (companyId) {
         }
         return await database.run(query);
     } catch (error) {
-        throw ("Error Occurred!", error);
+        throw ("Error:", error);
     }
 }
 
@@ -76,7 +76,7 @@ Company.createStockData = async function (stockData) {
         await database.table('companyStocks').insert(stockData)
         return true;
     } catch (error) {
-        return false;
+        throw ("Error:", error);
     }
 };
 

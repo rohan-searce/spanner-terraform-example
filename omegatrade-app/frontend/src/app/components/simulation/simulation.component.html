@@ -24,7 +24,7 @@
             <mat-form-field appearance="standard">
               <mat-label>Select Company</mat-label>
               <mat-select formControlName="companyId" id="companyId">
-                <mat-option *ngFor="let company of companies" [disabled]="isAlreadyStarted(company.companyId)"
+                <mat-option *ngFor="let company of companies" [disabled]="company.isAlreadyStarted"
                   [value]="company.companyId">{{ company.companyName }}</mat-option>
               </mat-select>
             </mat-form-field>
@@ -42,7 +42,7 @@
             <mat-form-field appearance="standard">
               <mat-label>Number of Records</mat-label>
               <mat-select formControlName="data" id="data">
-                <mat-option *ngFor="let data of datas" [value]="data">{{ data }}</mat-option>
+                <mat-option *ngFor="let record of noOfRecords" [value]="record">{{ record }}</mat-option>
               </mat-select>
             </mat-form-field>
           </div>
