@@ -76,6 +76,7 @@ Simulation.updateById = async function (simulation, cb) {
         await table.update([simulation]);
         cb(null, true)
     } catch (err) {
+        console.err(err);
         cb(err, null)
     }
 }
