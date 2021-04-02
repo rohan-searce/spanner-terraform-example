@@ -27,6 +27,7 @@ exports.getList = async function (req, res) {
     }
 };
 
+
 /**
  * Function to update simulation
  * 
@@ -94,11 +95,12 @@ exports.startSimulation = async function (req, res) {
                     stockData.close = spannerNumericRandValBetween(dayHigh, dayLow, 2);
                     stockData.volume = spannerNumericRandValBetween(2000, 4000, 3);
                     stockData.timestamp = 'spanner.commit_timestamp()';
-                    console.log('stockData.companyShortCode',i);
+                    console.log(stockData.companyShortCode,'simulation running',i);
                     const simulation = await Simulation.findByCompanyId(body.companyId, sId);
                     if (simulation && simulation[0]) {
                         if (simulation[0].status) {
                             await Company.createStockData(stockData);
+                             console.log('creating data',stockData.companyShortCode,i);
                         }
                     } else {
                         clearInterval(intervalId)
