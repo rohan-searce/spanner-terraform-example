@@ -14,18 +14,16 @@ Simulation.getAll = async function (cb) {
 
 Simulation.findById = async function (param, cb) {
     try {
-        let sId = param.sId
-        const query = {
+        const sId = param.sId
+        const [ result ] = await database.run({
             sql: 'select * from simulations where sId = @sId',
             params: {
                 sId: sId
-            }
-        };
-        let result = await database.run(query);
-        if (result[0]) {
-            var rows = result[0].map((row) => row.toJSON());
-            cb(null, rows)
-        }
+            },
+            json: true
+        });
+        cb(null, result)
+        
     } catch (error) {
         cb(error, null)
     }
@@ -33,15 +31,14 @@ Simulation.findById = async function (param, cb) {
 
 Simulation.findByCompanyId = async function (companyId, sid) {
     try {
-        const query = {
+        const [result] = await database.run({
             sql: 'select * from simulations where companyId = @companyId and sid = @sid',
             params: {
                 companyId: companyId,
                 sid: sid
             },
             json:true
-        };
-        const [result] = await database.run(query);
+        });
        return result;
     } catch (error) {
        return false;
@@ -64,31 +61,19 @@ Simulation.create = async function (companyId) {
 };
 
 Simulation.deleteById = async function (sId, cb) {
-    database.runTransaction(async (err, transaction) => {
-        if (err) {
-            cb(err, null)
-            return;
-        }
-        try {
-            const [rowCount] = await transaction.runUpdate({
-                sql: "DELETE FROM simulations WHERE sId = @sId",
-                params: {
-                    sId: sId
-                },
-            });
-            console.log(`Successfully deleted ${rowCount} record.`);
-            await transaction.commit();
-            cb(null, true)
-        } catch (err) {
-            cb(err, null)
-        }
-    });
+    try {
+        const simulation = database.table('simulations');
+        const result =  await simulation.deleteRows([sId]);
+        cb(null, result)
+    } catch (error) {
+        cb(error, null);
+    }
 }
 
-Simulation.updateById = async function (params, cb) {
+Simulation.updateById = async function (simulation, cb) {
     const table = database.table('simulations');
     try {
-        await table.update([params]);
+        await table.update([simulation]);
         cb(null, true)
     } catch (err) {
         cb(err, null)
