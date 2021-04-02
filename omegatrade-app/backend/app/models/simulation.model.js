@@ -16,7 +16,7 @@ Simulation.findById = async function (param, cb) {
     try {
         const sId = param.sId
         const [ result ] = await database.run({
-            sql: 'select * from simulations where sId = @sId',
+            sql: 'select sId,companyId,companyName,companyShortCode,status from simulations where sId = @sId',
             params: {
                 sId: sId
             },
@@ -32,7 +32,7 @@ Simulation.findById = async function (param, cb) {
 Simulation.findByCompanyId = async function (companyId, sid) {
     try {
         const [result] = await database.run({
-            sql: 'select * from simulations where companyId = @companyId and sid = @sid',
+            sql: 'select sId,companyId,companyName,companyShortCode,status from simulations where companyId = @companyId and sid = @sid',
             params: {
                 companyId: companyId,
                 sid: sid
