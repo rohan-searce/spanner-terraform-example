@@ -39,9 +39,9 @@ Simulation.findByCompanyId = async function (companyId, sid) {
             },
             json:true
         });
-       return result;
+        return result;
     } catch (error) {
-       return false;
+        throw ("ERROR:", error);
     }
 }
 

@@ -43,7 +43,6 @@ export class SimulationComponent implements OnInit {
       timeInterval: ['', [Validators.required]],
       data: ['', [Validators.required]],
     });
-    this.getSimulations();
   }
 
   initializeSortAndPagination() {
@@ -58,6 +57,7 @@ export class SimulationComponent implements OnInit {
         response => {
           if (response && response.success) {
             this.companies = response.data;
+            this.getSimulations();
           }
         },
         error => {
@@ -68,38 +68,40 @@ export class SimulationComponent implements OnInit {
   }
 
   deleteSimulation(simulation) {
-    const dialogData = new ConfirmDialogModel("Confirm Action", `Are you sure you want to delete simulation for  ${simulation.companyName}?`);
-    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
-      maxWidth: "400px",
-      data: dialogData
-    });
-    dialogRef.afterClosed().pipe(take(1)).subscribe(dialogResult => {
-      if (dialogResult === true) {
-        this.restService.deleteData(`simulations/delete/${simulation.sId}`)
-          .pipe(take(1))
-          .subscribe(
-            response => {
-              if (response && response.success) {
-                this.snackBarService.openSnackBar(response.message, '');
-                const index = this.dataSource.data.findIndex(simulationObj => simulationObj.sId === simulation.sId);
-                if (index > -1) {
-                  this.dataSource.data.splice(index, 1)
-                  this.dataSource = new MatTableDataSource(this.dataSource.data);
-                  this.runningSimulation = this.dataSource.data.length;
-                  this.initializeSortAndPagination();
+    if(simulation && simulation.sId && simulation.companyName){
+      const dialogData = new ConfirmDialogModel("Confirm Action", `Are you sure you want to delete simulation for  ${simulation.companyName}?`);
+      const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+        maxWidth: "400px",
+        data: dialogData
+      });
+      dialogRef.afterClosed().pipe(take(1)).subscribe(dialogResult => {
+        if (dialogResult === true) {
+          this.restService.deleteData(`simulations/delete/${simulation.sId}`)
+            .pipe(take(1))
+            .subscribe(
+              response => {
+                if (response && response.success) {
+                  this.snackBarService.openSnackBar(response.message, '');
+                  const index = this.dataSource.data.findIndex(simulationObj => simulationObj.sId === simulation.sId);
+                  if (index > -1) {
+                    this.dataSource.data.splice(index, 1)
+                    this.dataSource = new MatTableDataSource(this.dataSource.data);
+                    this.runningSimulation = this.dataSource.data.length;
+                    this.initializeSortAndPagination();
+                  }
+                  this.updateCompanyStatus(simulation.companyId);
                 }
-                this.updateCompanyStatus(simulation.companyId);
+                this.loader = false;
+              }, error => {
+                if (error && error.error && error.error.message) {
+                  this.snackBarService.openSnackBar(error.error.message, '');
+                }
+                this.loader = false;
               }
-              this.loader = false;
-            }, error => {
-              if (error && error.error && error.error.message) {
-                this.snackBarService.openSnackBar(error.error.message, '');
-              }
-              this.loader = false;
-            }
-          );
-      }
-    });
+            );
+        }
+      });
+    }
   }
 
   simulate(formDirective: FormGroupDirective) {

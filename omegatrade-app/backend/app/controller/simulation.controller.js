@@ -16,10 +16,10 @@ exports.getList = async function (req, res) {
     try {
         await Simulation.getAll(function (err, data) {
             if (err) {
-                res.json({ success: false, message: "something went wrong" });
+               return res.json({ success: false, message: "something went wrong" });
             }
             if (data) {
-                res.status(200).json({ success: true, data: data });
+               return res.status(200).json({ success: true, data: data });
             }
         });
     } catch (error) {
@@ -37,14 +37,14 @@ exports.updateSimulation = async function (req, res) {
     if (body) {
         await Simulation.updateById(body, function (err, data) {
             if (err) {
-                res.json({ success: false, message: "something went wrong" });
+               return res.json({ success: false, message: "something went wrong" });
             }
             if (data) {
-                res.status(200).json({ success: true, message: `Simulation ${(body.status == true) ? 'Started' : 'Stopped'}  sucessfully` });
+               return res.status(200).json({ success: true, message: `Simulation ${(body.status == true) ? 'Started' : 'Stopped'}  sucessfully` });
             }
         });
     } else {
-        res.status(501).json({ success: false, message: "invalid data" });
+        return res.status(501).json({ success: false, message: "invalid data" });
     }
 }
 
@@ -57,11 +57,11 @@ exports.deleteSimulation = async function (req, res) {
     let sId = req.params.sId;
     if (sId) {
         await Simulation.deleteById(sId, function (err, data) {
-            if (err) { res.json({ success: false, message: "something went wrong" }); }
-            if (data) { res.status(200).json({ success: true, message: `deleted sucessfully` }); }
+            if (err) { return res.json({ success: false, message: "something went wrong" }); }
+            if (data) { return res.status(200).json({ success: true, message: `deleted sucessfully` }); }
         });
     } else {
-        res.status(501).json({ success: false, message: "Invalid data" });
+       return res.status(501).json({ success: false, message: "Invalid data" });
     }
 };
 
@@ -94,7 +94,6 @@ exports.startSimulation = async function (req, res) {
                     stockData.close = spannerNumericRandValBetween(dayHigh, dayLow, 2);
                     stockData.volume = spannerNumericRandValBetween(2000, 4000, 3);
                     stockData.timestamp = 'spanner.commit_timestamp()';
-                    console.log('stockData.companyShortCode',i);
                     const simulation = await Simulation.findByCompanyId(body.companyId, sId);
                     if (simulation && simulation[0]) {
                         if (simulation[0].status) {
