@@ -33,18 +33,22 @@ exports.getList = async function (req, res) {
  * @method PUT
  */
 exports.updateSimulation = async function (req, res) {
-    const body = req.body;
-    if (body) {
-        await Simulation.updateById(body, function (err, data) {
-            if (err) {
-               return res.json({ success: false, message: "something went wrong" });
-            }
-            if (data) {
-               return res.status(200).json({ success: true, message: `Simulation ${(body.status == true) ? 'Started' : 'Stopped'}  sucessfully` });
-            }
-        });
-    } else {
-        return res.status(501).json({ success: false, message: "invalid data" });
+    try {
+        const body = req.body;
+        if (body) {
+            await Simulation.updateById(body, function (err, data) {
+                if (err) {
+                return res.json({ success: false, message: "something went wrong" });
+                }
+                if (data) {
+                return res.status(200).json({ success: true, message: `Simulation ${(body.status == true) ? 'Started' : 'Stopped'}  sucessfully` });
+                }
+            });
+        } else {
+            return res.status(501).json({ success: false, message: "invalid data" });
+        }
+    } catch(err){
+        return res.status(500).json({ success: false, "message": "something went wrong" }); 
     }
 }
 
@@ -54,14 +58,18 @@ exports.updateSimulation = async function (req, res) {
  * @method DELETE
  */
 exports.deleteSimulation = async function (req, res) {
-    let sId = req.params.sId;
-    if (sId) {
-        await Simulation.deleteById(sId, function (err, data) {
-            if (err) { return res.json({ success: false, message: "something went wrong" }); }
-            if (data) { return res.status(200).json({ success: true, message: `deleted sucessfully` }); }
-        });
-    } else {
-       return res.status(501).json({ success: false, message: "Invalid data" });
+    try {
+        const sId = req.params.sId;
+        if (sId) {
+            await Simulation.deleteById(sId, function (err, data) {
+                if (err) { return res.json({ success: false, message: "something went wrong" }); }
+                if (data) { return res.status(200).json({ success: true, message: `deleted sucessfully` }); }
+            });
+        } else {
+        return res.status(501).json({ success: false, message: "Invalid data" });
+        }
+    } catch(err){
+        return res.status(500).json({ success: false, "message": "something went wrong" }); 
     }
 };
 
@@ -75,25 +83,26 @@ exports.startSimulation = async function (req, res) {
             const stock = fakeStockmarketgenerator.generateStockData(body.data).priceData;
             const sId = await Simulation.create(company.companyId);
             if (sId) {
-                var i = 0;
-                var intervalId = setInterval(async () => {
+                let i = 0;
+                let intervalId = setInterval(async () => {
 
                     // Generating RandomData to match with stock logic
                     const randomValue = generateRandomValue(100, 110);
                     const dayHigh = randomValue + generateRandomValue();
                     const dayLow = randomValue - generateRandomValue();
-                    const stockData = {};
-                    stockData.companyStockId = uuidv4();
-                    stockData.companyId = body.companyId;
-                    stockData.companyShortCode = company.companyShortCode;
-                    stockData.date = Spanner.float(new Date().getTime());
-                    stockData.currentValue = spannerNumericRandVal(stock[i].price)
-                    stockData.open = spannerNumericRandVal(randomValue);
-                    stockData.dayHigh = spannerNumericRandVal(dayHigh);
-                    stockData.dayLow = spannerNumericRandVal(dayLow);
-                    stockData.close = spannerNumericRandValBetween(dayHigh, dayLow, 2);
-                    stockData.volume = spannerNumericRandValBetween(2000, 4000, 3);
-                    stockData.timestamp = 'spanner.commit_timestamp()';
+                    const stockData = {
+                        companyStockId : uuidv4(),
+                        companyId : body.companyId,
+                        companyShortCode : company.companyShortCode,
+                        date : Spanner.float(new Date().getTime()),
+                        currentValue : spannerNumericRandVal(stock[i].price),
+                        open :  spannerNumericRandVal(randomValue),
+                        dayHigh : spannerNumericRandVal(dayHigh),
+                        dayLow : spannerNumericRandVal(dayLow),
+                        close : spannerNumericRandValBetween(dayHigh, dayLow, 2),
+                        volume : spannerNumericRandValBetween(2000, 4000, 3),
+                        timestamp : 'spanner.commit_timestamp()'
+                    };
                     const simulation = await Simulation.findByCompanyId(body.companyId, sId);
                     if (simulation && simulation[0]) {
                         if (simulation[0].status) {
