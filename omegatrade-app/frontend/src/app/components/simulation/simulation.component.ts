@@ -8,6 +8,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { ConfirmDialogModel, ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog.component';
 import { RestService } from '../../services/rest.service';
 import { take } from 'rxjs/operators';
+import { Router } from '@angular/router';
 
 
 @Component({
@@ -33,7 +34,7 @@ export class SimulationComponent implements OnInit {
   runningSimulation = 0;
   maxAllowedSimulation = 3;
 
-  constructor(private snackBarService: SnackBarService, private restService: RestService, private formBuilder: FormBuilder, public dialog: MatDialog) {
+  constructor(private snackBarService: SnackBarService, private restService: RestService, private formBuilder: FormBuilder, public dialog: MatDialog, private router: Router) {
   }
 
   ngOnInit(): void {
@@ -116,6 +117,7 @@ export class SimulationComponent implements OnInit {
         response => {
           if (response && response.success) {
             this.updateCompanyStatus(this.simulateForm.get('companyId').value, true);
+            this.router.navigateByUrl('/dashboard?sId='+response.sId+'&companyId='+this.simulateForm.get('companyId').value);
             this.simulateForm.reset();
             formDirective.resetForm();
             this.getSimulations();

@@ -16,7 +16,7 @@ Simulation.findById = async function (param, cb) {
     try {
         const sId = param.sId
         const [ result ] = await database.run({
-            sql: 'select sId,companyId,companyName,companyShortCode,status from simulations where sId = @sId',
+            sql: 'select sId,companyId,status from simulations where sId = @sId',
             params: {
                 sId: sId
             },
@@ -32,7 +32,7 @@ Simulation.findById = async function (param, cb) {
 Simulation.findByCompanyId = async function (companyId, sid) {
     try {
         const [result] = await database.run({
-            sql: 'select sId,companyId,companyName,companyShortCode,status from simulations where companyId = @companyId and sid = @sid',
+            sql: 'select sId,companyId,status from simulations where companyId = @companyId and sid = @sid',
             params: {
                 companyId: companyId,
                 sid: sid
@@ -50,7 +50,7 @@ Simulation.create = async function (companyId) {
         const sId = uuidv4();
         await database.table('simulations').insert({
             sId: sId,
-            status: true,
+            status: 'PROCESSING',
             createdAt: 'spanner.commit_timestamp()',
             companyId: companyId,
         });
@@ -70,13 +70,13 @@ Simulation.deleteById = async function (sId, cb) {
     }
 }
 
-Simulation.updateById = async function (simulation, cb) {
+Simulation.updateById = async function (simulation) {
     const table = database.table('simulations');
     try {
-        await table.update([simulation]);
-        cb(null, true)
+        const [ result ] = await table.update([simulation]);
+        return result;
     } catch (err) {
-        cb(err, null)
+        console.log(err);
     }
 }
 

@@ -80,4 +80,74 @@ Company.createStockData = async function (stockData) {
     }
 };
 
+Company.getCompanyStock = async function (companyId,sId = null) {
+    try {
+        let params = { companyId: companyId }
+        let query;
+        let fields = `companies.companyId,companies.companyName,companies.companyShortCode,`
+        if(sId){
+            query = `select ${fields} simulations.status,simulations.sId from companies LEFT JOIN simulations  ON companies.companyId = simulations.companyId where companies.companyId = @companyId and simulations.sId=@sId`
+            params.sId = sId;
+        }else{
+            query = `select  ${fields} from companies where companyId = @companyId`;
+        }
+        console.log(query)
+        const [result] = await database.run({ sql: query, params: params,  json:true });
+       return result;
+    } catch (error) {
+        console.log('----- Dashboard Error ------',error)
+        cb(error, null)
+    }
+};
+
+Company.getStocks = async function(companyId,date = null){
+    try {
+        let conditions = ['companyId = @companyId'];
+        let values = { companyId : companyId };
+        if (date) {
+            conditions.push('date > @date');
+            values.date = date;
+        } 
+        const [ stockResult ] = await database.run({
+            sql: 'select date,currentValue from companyStocks where ' + conditions.join(' AND ')  +' ORDER BY date',
+            params: values,
+            json:true
+        });
+        return stockResult;
+    } catch (error) {
+        console.log(error)
+    }
+}
+
+
+/*
+
+if (date) {
+            var whereClause = 'where companyId = @companyId and date > @date ORDER BY date';
+            var params = {
+                companyId: companyId,
+                date: param.date
+            };
+        } else {
+            var whereClause = 'where companyId = @companyId ORDER BY date';
+            var params = {
+                companyId: companyId
+            }
+        }
+        
+        var query2 = {
+            sql: 'select date,currentValue from companyStocks ' + whereClause,
+            params: params
+        };
+        const stockResult = await database.run(query2);
+        console.log('----*******---->query2',query2);
+        console.log('----*******---->param',param)
+        if (stockResult[0]) {
+            var stockRows = stockResult[0].map((row) => row.toJSON());
+            response.stocks = stockRows;
+        }
+
+*/
+
+
 module.exports = Company

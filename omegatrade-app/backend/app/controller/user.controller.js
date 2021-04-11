@@ -37,13 +37,14 @@ exports.register = async function (req, res) {
     try {
         await User.registerUser({ ...user,password }, function (err, data) {
             if (err) {
+                console.log(err);
                 res.json({
                     success: false,
                     message: 'Something went wrong while registering new user!'
                 });
             }
             if (data) {
-                jwt.sign(user, process.env.JWT_SECRET, { expiresIn: process.env.EXPIRE_IN }, function (err, token) {
+                jwt.sign(user, process.env.JWT_KEY, { expiresIn: process.env.EXPIRE_IN }, function (err, token) {
                     if (err) {
                         res.status(400).json({
                             success: false,
@@ -60,6 +61,7 @@ exports.register = async function (req, res) {
             }
         });
     } catch (err) {
+        console.log(err);
         res.status(400).json({
             success: false,
             message: err
@@ -79,7 +81,7 @@ exports.login = function (req, res) {
         if (user && user.userId) {
             if (bcrypt.compareSync(body.password, user.password)) {
                     delete user.password;
-                    const token = jwt.sign(user, process.env.JWT_SECRET, {
+                    const token = jwt.sign(user, process.env.JWT_KEY, {
                         expiresIn: process.env.EXPIRE_IN
                     });
                     res.status(200).json({
@@ -118,7 +120,7 @@ exports.getToken = function (req, res) {
         User.findUser(body.email, function (err, user) {
             if (user && user.userId) {
                     delete user.password;
-                    const token = jwt.sign(user, process.env.JWT_SECRET, {
+                    const token = jwt.sign(user, process.env.JWT_KEY, {
                         expiresIn: process.env.EXPIRE_IN
                     });
                     res.status(200).json({

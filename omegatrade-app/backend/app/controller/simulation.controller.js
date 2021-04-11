@@ -105,18 +105,20 @@ exports.startSimulation = async function (req, res) {
                     };
                     const simulation = await Simulation.findByCompanyId(body.companyId, sId);
                     if (simulation && simulation[0]) {
-                        if (simulation[0].status) {
+                        if (simulation[0].status ==='PROCESSING') {
                             await Company.createStockData(stockData);
                         }
                     } else {
                         clearInterval(intervalId)
                     }
                     if (i === (body.data - 1)) {
+                        // update completed status
+                        await Simulation.updateById({sId:sId,status:'COMPLETED'})
                         clearInterval(intervalId)
                     }
                     i++;
                 }, interval);
-                return res.status(200).json({ success: true, message: "simulation started" });
+                return res.status(200).json({ success: true, sId:sId, message: "simulation started" });
             }
         }
     } catch (error) {

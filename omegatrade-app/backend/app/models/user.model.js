@@ -9,6 +9,7 @@ User.registerUser = async function (user, cb) {
     cb(null, true);
     return true;
   } catch (err) {
+    console.log('ERR',err);
     cb(err, null);
     return;
   } 
@@ -27,6 +28,7 @@ User.findUser = async function (email, cb) {
     cb(null,users[0]);
     return;
   } catch (error) {
+    console.log('------------------Error-----------------',error);
     cb(error, null)
     return;
   }
