@@ -5,6 +5,7 @@ import { RestService } from '../../services/rest.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { interval, Subscription } from "rxjs";
 import { take } from 'rxjs/operators';
+import { SnackBarService } from '../../services/snackbar.service';
 
 @Component({
   selector: 'app-stock-dashboard',
@@ -24,7 +25,7 @@ export class StockDashboardComponent implements OnInit {
   intervalId: number;
   sId: String;
 
-  constructor(private router: ActivatedRoute, private _snackBar: MatSnackBar, private restService: RestService) {
+  constructor(private snackBarService: SnackBarService, private router: ActivatedRoute, private _snackBar: MatSnackBar, private restService: RestService) {
   }
 
   ngOnInit(): void {
@@ -40,9 +41,9 @@ export class StockDashboardComponent implements OnInit {
           if (response && response.success) {
             this.companies = response.data;
             if (this.companies && this.companies.length > 0) {
-              if(this.sId){
+              if (this.sId) {
                 this.selectedCompany = this.router.snapshot.queryParamMap.get('companyId');
-              }else{
+              } else {
                 this.selectedCompany = this.companies[0].companyId;
               }
               this.getStockData();
@@ -50,7 +51,10 @@ export class StockDashboardComponent implements OnInit {
           }
         },
         error => {
-          this.openSnackBar(error.error.message, "")
+          if (error && error.error && error.error.message) {
+            this.snackBarService.openSnackBar(error.error.message, '');
+            this.ngOnDestroy();
+          }
           this.loader = false;
         });
   }
@@ -58,12 +62,12 @@ export class StockDashboardComponent implements OnInit {
   getStockData() {
     if (this.selectedCompany) {
       let params = `${this.selectedCompany}`;
-      if(this.sId){
-        params += `?sId=${this.sId}` ;
+      if (this.sId) {
+        params += `?sId=${this.sId}`;
       }
-      console.log(params);
       this.loader = true;
       this.restService.getData(`companies/dashboard/${params}`)
+        .pipe(take(1))
         .subscribe(
           response => {
             if (response && response.success) {
@@ -72,16 +76,19 @@ export class StockDashboardComponent implements OnInit {
               if (this.stocks && this.stocks.length > 0) {
                 this.parseStockDatas();
                 this.lastUpdatedTime = this.stocks[(this.stocks.length - 1)].date;
-              }else if(this.company && this.company.status === 'PROCESSING'){
+              } else if (this.company && this.company.status === 'PROCESSING') {
                 setTimeout(() => {
                   this.getStockData();
-              }, 5000);
+                }, 5000);
               }
               this.loader = false;
             }
           },
           error => {
-            this.openSnackBar(error.error.message, "")
+            if (error && error.error && error.error.message) {
+              this.snackBarService.openSnackBar(error.error.message, '');
+              this.ngOnDestroy();
+            }
             this.loader = false;
           });
     }
@@ -123,14 +130,15 @@ export class StockDashboardComponent implements OnInit {
   }
 
   updateDashboard() {
-    if (this.selectedCompany && this.stocks.length && this.lastUpdatedTime) {
+    if (this.selectedCompany && this.lastUpdatedTime) {
       this.restService.getData(`companies/dashboard/${this.selectedCompany}?sId=${this.sId}&date=${this.lastUpdatedTime}`)
+        .pipe(take(1))
         .subscribe(
           response => {
             if (response && response.success) {
               const data = response.data.stocks;
               const company = response.data.company;
-              if (company.status == 'COMPLETED' && this.subscription) {
+              if (company.status == 'COMPLETED' && this.subscription && !this.subscription.closed) {
                 this.subscription && this.subscription.unsubscribe();
               } else {
                 this.stocks = data;
@@ -141,36 +149,32 @@ export class StockDashboardComponent implements OnInit {
                       chart.series[0].addPoint([data[i].date, parseInt(data[i].currentValue)]);
                     }
                   });
+                }else if(company && company.status == 'PROCESSING'){
+                  console.log('here')
+                  setTimeout(() => {
+                    this.updateDashboard();
+                  }, 5000);
                 }
               }
             }
           },
           error => {
-            this.openSnackBar(error.error.message, "")
+            if (error && error.error && error.error.message) {
+              this.snackBarService.openSnackBar(error.error.message, '');
+              this.ngOnDestroy();
+            }
             this.loader = false;
           });
     }
-  }
-
-
-  openSnackBar(message: string, action: string) {
-    this._snackBar.open(message, action, {
-      duration: 2000,
-    });
   }
 
   changeCompany() {
     this.getStockData()
   }
 
-
-
-
-
-
-
   ngOnDestroy() {
-    this.subscription && this.subscription.unsubscribe();
+    if (this.subscription && !this.subscription.closed)
+      this.subscription && this.subscription.unsubscribe();
   }
 }
 
