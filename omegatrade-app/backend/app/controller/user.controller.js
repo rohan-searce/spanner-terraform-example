@@ -37,7 +37,6 @@ exports.register = async function (req, res) {
     try {
         await User.registerUser({ ...user,password }, function (err, data) {
             if (err) {
-                console.log(err);
                 res.json({
                     success: false,
                     message: 'Something went wrong while registering new user!'
@@ -61,7 +60,6 @@ exports.register = async function (req, res) {
             }
         });
     } catch (err) {
-        console.log(err);
         res.status(400).json({
             success: false,
             message: err
