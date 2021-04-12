@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Chart, StockChart } from 'angular-highcharts';
 import { ActivatedRoute } from '@angular/router';
 import { RestService } from '../../services/rest.service';
@@ -12,27 +12,32 @@ import { SnackBarService } from '../../services/snackbar.service';
   templateUrl: './stock-dashboard.component.html',
   styleUrls: ['./stock-dashboard.component.css']
 })
-export class StockDashboardComponent implements OnInit {
+export class StockDashboardComponent implements OnInit , OnDestroy{
 
   selectedCompany: string = "";
   lastUpdatedTime;
   stock: StockChart;
-  stocks: any;
-  company: any;
   companies: any;
   loader: boolean = false;
   subscription: Subscription;
-  intervalId: number;
-  sId: String;
-
+  timerIds = [];
+  
   constructor(private snackBarService: SnackBarService, private router: ActivatedRoute, private _snackBar: MatSnackBar, private restService: RestService) {
   }
 
+  /**
+   *  Function to Initiate component.
+   *  Initiating company lists
+   */
   ngOnInit(): void {
-    this.sId = this.router.snapshot.queryParamMap.get('sId');
+    this.selectedCompany = this.router.snapshot.queryParamMap.get('companyId');
     this.getCompanies();
   }
 
+  /**
+   *  Function to get all companies.
+   *  @returns  {null}
+   */
   getCompanies() {
     this.restService.getData('companies/list')
       .pipe(take(1))
@@ -41,11 +46,8 @@ export class StockDashboardComponent implements OnInit {
           if (response && response.success) {
             this.companies = response.data;
             if (this.companies && this.companies.length > 0) {
-              if (this.sId) {
-                this.selectedCompany = this.router.snapshot.queryParamMap.get('companyId');
-              } else {
+              if(!this.selectedCompany || this.selectedCompany === "")
                 this.selectedCompany = this.companies[0].companyId;
-              }
               this.getStockData();
             }
           }
@@ -53,33 +55,40 @@ export class StockDashboardComponent implements OnInit {
         error => {
           if (error && error.error && error.error.message) {
             this.snackBarService.openSnackBar(error.error.message, '');
-            this.ngOnDestroy();
           }
+          this.clearAllTimeOuts();
           this.loader = false;
         });
   }
 
+  /**
+   *  Function to get all stockDatas for selected company.
+   * 
+   *  @returns  {null}
+   */
   getStockData() {
     if (this.selectedCompany) {
-      let params = `${this.selectedCompany}`;
-      if (this.sId) {
-        params += `?sId=${this.sId}`;
-      }
       this.loader = true;
-      this.restService.getData(`companies/dashboard/${params}`)
+      this.restService.getData(`companies/dashboard/${this.selectedCompany}`)
         .pipe(take(1))
         .subscribe(
           response => {
             if (response && response.success) {
-              this.stocks = response.data.stocks;
-              this.company = response.data.company;
-              if (this.stocks && this.stocks.length > 0) {
-                this.parseStockDatas();
-                this.lastUpdatedTime = this.stocks[(this.stocks.length - 1)].date;
-              } else if (this.company && this.company.status === 'PROCESSING') {
-                setTimeout(() => {
+              const stocks = response.data.stocks;
+              const company = response.data.company;
+              if (stocks && stocks.length > 0) {
+                this.parseStockDatas(stocks,company);
+              } else if (company && company.status === 'PROCESSING') {
+                /**
+                 * Retrying getStockData in the case of empty stocks at that current time. 
+                 * But it may have data since the staus is in PROCESSING,
+                 * so fetching the datas of running simulation in certain interval.
+                 * 
+                 */
+                const id = setTimeout(() => {
                   this.getStockData();
                 }, 5000);
+                this.timerIds.push(id);
               }
               this.loader = false;
             }
@@ -87,73 +96,86 @@ export class StockDashboardComponent implements OnInit {
           error => {
             if (error && error.error && error.error.message) {
               this.snackBarService.openSnackBar(error.error.message, '');
-              this.ngOnDestroy();
             }
+            this.clearAllTimeOuts();
             this.loader = false;
           });
     }
   }
-
-  parseStockDatas() {
-    const data = [];
-    for (var i = 0; i < this.stocks.length; i++) {
-      data.push([this.stocks[i].date, parseInt(this.stocks[i].currentValue)])
+  /**
+   * Function to parse the stocks and form as per the chart data format
+   * @param stocks  Unformatted stocks data
+   * @param company 
+   */
+  parseStockDatas(stocks,company) {
+    const chartData = [];
+    this.lastUpdatedTime = stocks[(stocks.length - 1)].date;
+    for (var i = 0; i < stocks.length; i++) {
+      chartData.push([stocks[i].date, parseInt(stocks[i].currentValue)])
     }
-    this.createChart(data)
+    this.createChart(chartData,company)
   }
 
-  createChart(data) {
+  /**
+   * Function to draw new chart for a company
+   * @param chartData Formatted chart data
+   * @param company 
+   */
+  createChart(chartData,company) {
     this.stock = new StockChart({
       rangeSelector: {
         selected: 1
       },
       title: {
-        text: this.company.companyName + ' Stock Price'
+        text: company.companyName + ' Stock Price'
       },
       series: [{
         tooltip: {
           valueDecimals: 2,
         },
-        name: this.company.companyShortCode,
+        name: company.companyShortCode,
         type: 'line',
-        data: data,
+        data: chartData,
       }]
     });
-    if (this.sId) {
-      this.updatePoints();
+    if (company && company.status === 'PROCESSING') {
+      this.updateDashboard();
     }
-  }
-
-  updatePoints() {
-    const source = interval(5000);
-    this.subscription = source.subscribe(val => this.updateDashboard());
   }
 
   updateDashboard() {
     if (this.selectedCompany && this.lastUpdatedTime) {
-      this.restService.getData(`companies/dashboard/${this.selectedCompany}?sId=${this.sId}&date=${this.lastUpdatedTime}`)
+      this.restService.getData(`companies/dashboard/${this.selectedCompany}?date=${this.lastUpdatedTime}`)
         .pipe(take(1))
         .subscribe(
           response => {
             if (response && response.success) {
               const data = response.data.stocks;
               const company = response.data.company;
-              if (company.status == 'COMPLETED' && this.subscription && !this.subscription.closed) {
-                this.subscription && this.subscription.unsubscribe();
+              if (company.status == 'COMPLETED' || company.status === null) {
+                  // Canceling Subscrition when simulation completed
+                  this.clearAllTimeOuts()
               } else {
-                this.stocks = data;
                 if (data && data.length > 0) {
-                  this.lastUpdatedTime = this.stocks[(this.stocks.length - 1)].date;
+                  // updating lastUpdatedtime with current stock data
+                  this.lastUpdatedTime = data[(data.length - 1)].date;
                   this.stock.ref$.subscribe(chart => {
                     for (var i = 0; i < data.length; i++) {
                       chart.series[0].addPoint([data[i].date, parseInt(data[i].currentValue)]);
                     }
                   });
-                }else if(company && company.status == 'PROCESSING'){
-                  console.log('here')
-                  setTimeout(() => {
+                }
+                if(company && company.status == 'PROCESSING'){
+                  /**
+                   * Retrying getStockData in the case of empty stocks at that current time. 
+                   * But it may have data since the staus is in PROCESSING,
+                   * so fetching the datas of running simulation in certain interval.
+                   * 
+                   */
+                   const id = setTimeout(() => {
                     this.updateDashboard();
                   }, 5000);
+                  this.timerIds.push(id);
                 }
               }
             }
@@ -161,21 +183,34 @@ export class StockDashboardComponent implements OnInit {
           error => {
             if (error && error.error && error.error.message) {
               this.snackBarService.openSnackBar(error.error.message, '');
-              this.ngOnDestroy();
             }
+            this.clearAllTimeOuts();
             this.loader = false;
           });
     }
   }
-
-  changeCompany() {
-    this.getStockData()
+  
+  /**
+   * Function to clear all timeout functions
+   */
+  clearAllTimeOuts() {
+    if(this.timerIds && this.timerIds.length>0){
+      let len = this.timerIds.length;
+      const ids = this.timerIds;
+      while (len > 0) {
+        const id = ids[len - 1];
+       clearTimeout(id);
+        len--;
+      }
+    }
   }
-
+  
   ngOnDestroy() {
-    if (this.subscription && !this.subscription.closed)
-      this.subscription && this.subscription.unsubscribe();
+    this.clearAllTimeOuts();
   }
+
+  
+
 }
 
 

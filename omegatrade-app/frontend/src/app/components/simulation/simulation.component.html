@@ -93,17 +93,19 @@
           <ng-container matColumnDef="action">
             <th mat-header-cell *matHeaderCellDef mat-sort-header> Action</th>
             <td mat-cell *matCellDef="let row" class="action-button">
+              <a href="javascript:void(0)" class="delete-company-btn" matTooltip="view simulation" [routerLink]="['/dashboard']" [queryParams]="{companyId: row.companyId}" ><i class="material-icons">visibility</i></a>
+                &nbsp;&nbsp;
+              <a href="javascript:void(0)" class="delete-company-btn" matTooltip="Delete simulation"
+                (click)="deleteSimulation(row)"><i class="material-icons">delete</i></a>
+                &nbsp;&nbsp;
               <a href="javascript:void(0)" matTooltip="start simulation" *ngIf="row.status =='STOPPED'" class="start"
-                (click)="updateSimulation(row)">
+                (click)="updateSimulation(row,'PROCESSING')">
                 <mat-icon aria-hidden="false" aria-label="Example home icon">play_circle</mat-icon>
               </a>
               <a href="javascript:void(0)" matTooltip="stop simulation" *ngIf="row.status =='PROCESSING'" class="stop"
-                (click)="updateSimulation(row)">
+                (click)="updateSimulation(row,'STOPPED')">
                 <mat-icon aria-hidden="false" aria-label="Example home icon">stop_circle</mat-icon>
               </a>
-              &nbsp;&nbsp;
-              <a href="javascript:void(0)" class="delete-company-btn" matTooltip="Delete simulation"
-                (click)="deleteSimulation(row)"><i class="material-icons">delete</i></a>
             </td>
           </ng-container>
 

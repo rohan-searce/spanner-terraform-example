@@ -36,19 +36,13 @@ exports.updateSimulation = async function (req, res) {
     try {
         const body = req.body;
         if (body) {
-            await Simulation.updateById(body, function (err, data) {
-                if (err) {
-                return res.json({ success: false, message: "something went wrong" });
-                }
-                if (data) {
-                return res.status(200).json({ success: true, message: `Simulation ${(body.status == true) ? 'Started' : 'Stopped'}  sucessfully` });
-                }
-            });
+            await Simulation.updateById(body) 
+            return res.status(200).json({ success: true, message: `Simulation ${body.status}  sucessfully` });
         } else {
             return res.status(501).json({ success: false, message: "invalid data" });
         }
     } catch(err){
-        return res.status(500).json({ success: false, "message": "something went wrong" }); 
+        return res.status(500).json({ success: false, "message": err }); 
     }
 }
 

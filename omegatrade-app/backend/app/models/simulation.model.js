@@ -77,6 +77,7 @@ Simulation.updateById = async function (simulation) {
         return result;
     } catch (err) {
         console.log(err);
+        throw new Error('Error update simulation by ID');
     }
 }
 

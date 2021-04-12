@@ -117,7 +117,6 @@ export class SimulationComponent implements OnInit {
         response => {
           if (response && response.success) {
             this.updateCompanyStatus(this.simulateForm.get('companyId').value, true);
-            this.router.navigateByUrl('/dashboard?sId='+response.sId+'&companyId='+this.simulateForm.get('companyId').value);
             this.simulateForm.reset();
             formDirective.resetForm();
             this.getSimulations();
@@ -140,7 +139,6 @@ export class SimulationComponent implements OnInit {
         response => {
           if (response && response.success) {
             this.runningSimulation = response.data.length;
-            console.log(this.runningSimulation);
             this.dataSource = new MatTableDataSource(response.data);
             this.initializeSortAndPagination();
             if (response.data && response.data.length > 0) {
@@ -159,9 +157,9 @@ export class SimulationComponent implements OnInit {
         });
   }
 
-  updateSimulation(simulation) {
+  updateSimulation(simulation,status) {
     this.loader = true;
-    const payLoad = { sId: simulation.sId, status: (simulation.status) ? false : true }
+    const payLoad = { sId: simulation.sId, status: status }
     this.restService.putData(`simulations/update`, payLoad)
       .pipe(take(1))
       .subscribe(

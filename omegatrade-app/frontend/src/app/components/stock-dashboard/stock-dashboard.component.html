@@ -7,7 +7,7 @@
     <div class="example-container">
         <mat-form-field appearance="standard">
             <mat-label>Select</mat-label>
-            <mat-select (selectionChange)="changeCompany()" [(ngModel)]="selectedCompany" [disabled]="this.sId">
+            <mat-select (selectionChange)="getStockData()" [(ngModel)]="selectedCompany">
                 <mat-option *ngFor="let company of this.companies" [value]="company.companyId">{{ company.companyName }}
                 </mat-option>
             </mat-select>

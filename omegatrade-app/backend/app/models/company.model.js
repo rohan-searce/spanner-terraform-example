@@ -80,39 +80,36 @@ Company.createStockData = async function (stockData) {
     }
 };
 
+/**
+ * Function to get company and simulation of that company if exits.
+ * @param {*} companyId 
+ * @param {*} sId 
+ * @returns array
+ */
 Company.getCompanySimulation = async function (companyId, sId = null) {
     try {
-        const params = {
-            companyId: companyId
-        }
-        let query;
-        const fields = `companies.companyId,companies.companyName,companies.companyShortCode,`
-        if (sId) {
-            query = `SELECT ${fields} simulations.status,simulations.sId 
-            FROM companies 
-            LEFT JOIN simulations ON companies.companyId = simulations.companyId
-            WHERE companies.companyId = @companyId and simulations.sId=@sId`
-            params.sId = sId;
-        } else {
-            query = `select ${fields} 
-            FROM companies 
-            WHERE companyId = @companyId`;
-        }
-        const [result] = await database.run({
+        const fields = `companies.companyId,companies.companyName,companies.companyShortCode,simulations.status,simulations.sId`
+        const query = `SELECT ${fields}  
+        FROM companies 
+        LEFT JOIN simulations ON companies.companyId = simulations.companyId
+        WHERE companies.companyId = @companyId 
+        ORDER BY simulations.createdAt DESC
+        LIMIT 1`
+       const [result] = await database.run({
             sql: query,
-            params: params,
+            params: { companyId: companyId },
             json: true
         });
         return result;
     } catch (error) {
-        throw new Error('Error finding company simulation');
+        throw ('Error finding company simulation');
     }
 };
 
 Company.getStocks = async function (companyId, date = null) {
     try {
-        let conditions = ['companyId = @companyId'];
-        let values = {
+        const conditions = ['companyId = @companyId'];
+        const values = {
             companyId: companyId
         };
         if (date) {
@@ -129,7 +126,7 @@ Company.getStocks = async function (companyId, date = null) {
         });
         return stockResult;
     } catch (error) {
-        throw new Error('Error finding stocks');
+        throw ('Error finding stocks');
     }
 }
 
