@@ -3,7 +3,7 @@ const { Spanner } = require('@google-cloud/spanner')
 /**
 * Returns a Spanner numeric Object.
 */
-const spannerNumericRandVal = (value) => {
+const spannerNumericVal = (value) => {
     return Spanner.numeric(value.toString());
 }
 
@@ -34,7 +34,7 @@ const generateRandomValue = (min = null, max = null) => {
 }
 
 module.exports = {
-    spannerNumericRandVal,
+    spannerNumericVal,
     spannerNumericRandValBetween,
     generateRandomValue,
 };
