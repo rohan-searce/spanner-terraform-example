@@ -14,16 +14,11 @@ const { Spanner } = require('@google-cloud/spanner');
  */
 exports.getList = async function (req, res) {
     try {
-        await Simulation.getAll(function (err, data) {
-            if (err) {
-               return res.json({ success: false, message: "something went wrong" });
-            }
-            if (data) {
-               return res.status(200).json({ success: true, data: data });
-            }
-        });
+        const simulation = await Simulation.getAll();
+        return res.status(200).json({ success: true, data: simulation });
     } catch (error) {
-        return res.status(500).json({ success: false, message: "something went wrong" });
+        logService.writeLog('simulation.controller.getList', error);
+        return res.status(500).json({ success: false, message: "Something went wrong  while fetching all Simulations" });
     }
 };
 
@@ -36,19 +31,14 @@ exports.updateSimulation = async function (req, res) {
     try {
         const body = req.body;
         if (body) {
-            await Simulation.updateById(body, function (err, data) {
-                if (err) {
-                return res.json({ success: false, message: "something went wrong" });
-                }
-                if (data) {
-                return res.status(200).json({ success: true, message: `Simulation ${(body.status == true) ? 'Started' : 'Stopped'}  sucessfully` });
-                }
-            });
+            await Simulation.updateById(body)
+            return res.status(200).json({ success: true, message: `Simulation ${body.status}  sucessfully` });
         } else {
-            return res.status(501).json({ success: false, message: "invalid data" });
+            return res.status(501).json({ success: false, message: "Update failed, please check the data" });
         }
-    } catch(err){
-        return res.status(500).json({ success: false, "message": "something went wrong" }); 
+    } catch (error) {
+        logService.writeLog('simulation.controller.updateSimulation', error);
+        return res.status(500).json({ success: false, "message": "something went wrong while updating simulation." });
     }
 }
 
@@ -61,15 +51,15 @@ exports.deleteSimulation = async function (req, res) {
     try {
         const sId = req.params.sId;
         if (sId) {
-            await Simulation.deleteById(sId, function (err, data) {
-                if (err) { return res.json({ success: false, message: "something went wrong" }); }
-                if (data) { return res.status(200).json({ success: true, message: `deleted sucessfully` }); }
-            });
-        } else {
-        return res.status(501).json({ success: false, message: "Invalid data" });
+            await Simulation.deleteById(sId)
+            return res.status(200).json({ success: true, message: 'deleted sucessfully' });
         }
-    } catch(err){
-        return res.status(500).json({ success: false, "message": "something went wrong" }); 
+        else {
+            return res.status(501).json({ success: false, message: "Deletion Failed, please check the data" });
+        }
+    } catch (err) {
+        logService.writeLog('simulation.controller.deleteSimulation', error);
+        return res.status(500).json({ success: false, "message": "something went wrong while deleting a company" });
     }
 };
 
@@ -82,45 +72,48 @@ exports.startSimulation = async function (req, res) {
             const interval = body.timeInterval * 1000;
             const stock = fakeStockmarketgenerator.generateStockData(body.data).priceData;
             const sId = await Simulation.create(company.companyId);
-            if (sId) {
-                let i = 0;
-                let intervalId = setInterval(async () => {
-
-                    // Generating RandomData to match with stock logic
-                    const randomValue = generateRandomValue(100, 110);
-                    const dayHigh = randomValue + generateRandomValue();
-                    const dayLow = randomValue - generateRandomValue();
-                    const stockData = {
-                        companyStockId : uuidv4(),
-                        companyId : body.companyId,
-                        companyShortCode : company.companyShortCode,
-                        date : Spanner.float(new Date().getTime()),
-                        currentValue : spannerNumericRandVal(stock[i].price),
-                        open :  spannerNumericRandVal(randomValue),
-                        dayHigh : spannerNumericRandVal(dayHigh),
-                        dayLow : spannerNumericRandVal(dayLow),
-                        close : spannerNumericRandValBetween(dayHigh, dayLow, 2),
-                        volume : spannerNumericRandValBetween(2000, 4000, 3),
-                        timestamp : 'spanner.commit_timestamp()'
-                    };
-                    const simulation = await Simulation.findByCompanyId(body.companyId, sId);
-                    if (simulation && simulation[0]) {
-                        if (simulation[0].status) {
-                            await Company.createStockData(stockData);
-                        }
-                    } else {
-                        clearInterval(intervalId)
-                    }
-                    if (i === (body.data - 1)) {
-                        clearInterval(intervalId)
-                    }
-                    i++;
-                }, interval);
-                return res.status(200).json({ success: true, message: "simulation started" });
+            let i = 0;
+            let intervalId = setInterval(async () => {
+            // Generating RandomData to match with stock logic
+            const randomValue = generateRandomValue(100, 110);
+            const dayHigh = randomValue + generateRandomValue();
+            const dayLow = randomValue - generateRandomValue();
+            const stockData = {
+                companyStockId: uuidv4(),
+                companyId: body.companyId,
+                companyShortCode: company.companyShortCode,
+                date: Spanner.float(new Date().getTime()),
+                currentValue: spannerNumericRandVal(stock[i].price),
+                open: spannerNumericRandVal(randomValue),
+                dayHigh: spannerNumericRandVal(dayHigh),
+                dayLow: spannerNumericRandVal(dayLow),
+                close: spannerNumericRandValBetween(dayHigh, dayLow, 2),
+                volume: spannerNumericRandValBetween(2000, 4000, 3),
+                timestamp: 'spanner.commit_timestamp()'
+            };
+            const simulation = await Simulation.findByCompanyId(body.companyId, sId);
+            if (simulation && simulation[0]) {
+                if (simulation[0].status === 'PROCESSING') {
+                    await Company.createStockData(stockData);
+                }
+            } else {
+                clearInterval(intervalId)
             }
+            if (i === (body.data - 1)) {
+                // update completed status
+                await Simulation.updateById({ sId: sId, status: 'COMPLETED' })
+                clearInterval(intervalId)
+            }
+            i++;
+        }, interval);
+            return res.status(200).json({ success: true, sId: sId, message: "simulation started" });
+
+        } else {
+            return res.status(501).json({ success: false, message: "Simulation Failed, please check the data" });
         }
     } catch (error) {
-        return res.status(500).json({ success: false, "message": "something went wrong" });
+        logService.writeLog('simulation.controller.startSimulation', error);
+        return res.status(500).json({ success: false, "message": "something went wrong while starting simulation" });
     }
 }
 
