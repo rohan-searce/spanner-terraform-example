@@ -72,7 +72,7 @@ spec:
 
                     git branch: 'main',
                         credentialsId: 'Rohan-Github-Account-Credentials',
-                        url: $GITHUB_URL
+                        url: '$GITHUB_URL'
                 }
             }
         }
@@ -85,7 +85,7 @@ spec:
                 container('git'){
                     git branch: 'prod',
                         credentialsId: 'Rohan-Github-Account-Credentials',
-                        url: $GITHUB_URL
+                        url: '$GITHUB_URL'
                 }
             }
         }
