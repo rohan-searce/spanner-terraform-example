@@ -92,7 +92,7 @@ exports.startSimulation = async function (req, res) {
                     volume: spannerNumericRandValBetween(2000, 4000),
                     timestamp: 'spanner.commit_timestamp()'
                 };
-                const [simulation] = await Simulation.findByCompanyId(body.companyId, sId);
+                const [simulation] = await Simulation.findOne(body.companyId, sId);
 
                 // check the existance of simulation and status is PROCESSING
                 if (!simulation) {
