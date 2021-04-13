@@ -8,7 +8,10 @@ const spannerNumericRandVal = (value) => {
 }
 
 /**
- * Returns a random number between min (inclusive) and max (inclusive)
+ * Returns a random number between min (inclusive) and max (exclusive)
+ * 
+ * This Function return spanner numeric integer value scale is null 
+ * and return spanner numeric decimal value if scale is passed
  */
 const spannerNumericRandValBetween = (min, max, scale = null) => {
     const rand = Math.random() * (max - min) + min;

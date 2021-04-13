@@ -102,7 +102,7 @@ exports.startSimulation = async function (req, res) {
                     await Company.createStockData(stockData);
                 }
 
-                // clears the interval if inserted record equals to given data
+                // clears the interval when stockDataCount reaches value given in data.
                 if (stockDataCount === (body.data - 1)) {
                     // update completed status
                     await Simulation.updateById({ sId: sId, status: 'COMPLETED' })
