@@ -5,6 +5,7 @@ const { v4: uuidv4 } = require('uuid');
 const { spannerNumericRandVal, spannerNumericRandValBetween, generateRandomValue } = require('../helpers/stockdata.helper');
 const fakeStockmarketgenerator = require('fake-stock-market-generator');
 const { Spanner } = require('@google-cloud/spanner');
+const logService = require('../helpers/logservice');
 
 
 /**
@@ -72,48 +73,50 @@ exports.startSimulation = async function (req, res) {
             const interval = body.timeInterval * 1000;
             const stock = fakeStockmarketgenerator.generateStockData(body.data).priceData;
             const sId = await Simulation.create(company.companyId);
-            let i = 0;
+            let stockDataCount = 0;
             let intervalId = setInterval(async () => {
-            // Generating RandomData to match with stock logic
-            const randomValue = generateRandomValue(100, 110);
-            const dayHigh = randomValue + generateRandomValue();
-            const dayLow = randomValue - generateRandomValue();
-            const stockData = {
-                companyStockId: uuidv4(),
-                companyId: body.companyId,
-                companyShortCode: company.companyShortCode,
-                date: Spanner.float(new Date().getTime()),
-                currentValue: spannerNumericRandVal(stock[i].price),
-                open: spannerNumericRandVal(randomValue),
-                dayHigh: spannerNumericRandVal(dayHigh),
-                dayLow: spannerNumericRandVal(dayLow),
-                close: spannerNumericRandValBetween(dayHigh, dayLow, 2),
-                volume: spannerNumericRandValBetween(2000, 4000, 3),
-                timestamp: 'spanner.commit_timestamp()'
-            };
-            const simulation = await Simulation.findByCompanyId(body.companyId, sId);
-            if (simulation && simulation[0]) {
-                if (simulation[0].status === 'PROCESSING') {
+                // Generating RandomData to match with stock logic
+                const randomValue = generateRandomValue(100, 110);
+                const dayHigh = randomValue + generateRandomValue();
+                const dayLow = randomValue - generateRandomValue();
+                const stockData = {
+                    companyStockId: uuidv4(),
+                    companyId: body.companyId,
+                    companyShortCode: company.companyShortCode,
+                    date: Spanner.float(new Date().getTime()),
+                    currentValue: spannerNumericRandVal(stock[stockDataCount].price),
+                    open: spannerNumericRandVal(randomValue),
+                    dayHigh: spannerNumericRandVal(dayHigh),
+                    dayLow: spannerNumericRandVal(dayLow),
+                    close: spannerNumericRandValBetween(dayHigh, dayLow, 2),
+                    volume: spannerNumericRandValBetween(2000, 4000),
+                    timestamp: 'spanner.commit_timestamp()'
+                };
+                const [simulation] = await Simulation.findByCompanyId(body.companyId, sId);
+
+                // check the existance of simulation and status is PROCESSING
+                if (!simulation) {
+                    // clears the intervalled loop if simulation deleted 
+                    clearInterval(intervalId)
+                } else if (simulation && simulation.sId && simulation.status === 'PROCESSING') {
                     await Company.createStockData(stockData);
                 }
-            } else {
-                clearInterval(intervalId)
-            }
-            if (i === (body.data - 1)) {
-                // update completed status
-                await Simulation.updateById({ sId: sId, status: 'COMPLETED' })
-                clearInterval(intervalId)
-            }
-            i++;
-        }, interval);
-            return res.status(200).json({ success: true, sId: sId, message: "simulation started" });
 
+                // clears the interval if inserted record equals to given data
+                if (stockDataCount === (body.data - 1)) {
+                    // update completed status
+                    await Simulation.updateById({ sId: sId, status: 'COMPLETED' })
+                    clearInterval(intervalId)
+                }
+                stockDataCount++;
+            }, interval);
+            return res.status(200).json({ success: true, sId: sId, message: "Simulation started" });
         } else {
             return res.status(501).json({ success: false, message: "Simulation Failed, please check the data" });
         }
     } catch (error) {
         logService.writeLog('simulation.controller.startSimulation', error);
-        return res.status(500).json({ success: false, "message": "something went wrong while starting simulation" });
+        return res.status(500).json({ success: false, "message": "Something went wrong while starting simulation" });
     }
 }
 

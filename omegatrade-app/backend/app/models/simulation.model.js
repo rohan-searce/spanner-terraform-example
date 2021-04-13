@@ -16,7 +16,7 @@ Simulation.getAll = async function () {
 Simulation.findById = async function (param) {
     const sId = param.sId
     const [result] = await database.run({
-        sql: 'select sId,companyId,companyName,companyShortCode,status from simulations where sId = @sId',
+        sql: 'select sId,companyId,status from simulations where sId = @sId',
         params: {
             sId: sId
         },
@@ -27,7 +27,7 @@ Simulation.findById = async function (param) {
 
 Simulation.findByCompanyId = async function (companyId, sid) {
     const [result] = await database.run({
-        sql: `SELECT sId,companyId,companyName,companyShortCode,status 
+        sql: `SELECT sId,companyId,status 
               FROM simulations 
               WHERE companyId = @companyId AND sid = @sid`,
         params: {
@@ -43,7 +43,7 @@ Simulation.create = async function (companyId) {
     const sId = uuidv4();
     await database.table('simulations').insert({
         sId: sId,
-        status: true,
+        status: 'PROCESSING',
         createdAt: 'spanner.commit_timestamp()',
         companyId: companyId,
     });
