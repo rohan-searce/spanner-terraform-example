@@ -1,9 +1,8 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { Chart, StockChart } from 'angular-highcharts';
+import { StockChart } from 'angular-highcharts';
 import { ActivatedRoute } from '@angular/router';
 import { RestService } from '../../services/rest.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { interval, Subscription } from "rxjs";
 import { take } from 'rxjs/operators';
 import { SnackBarService } from '../../services/snackbar.service';
 
@@ -19,7 +18,6 @@ export class StockDashboardComponent implements OnInit , OnDestroy{
   stock: StockChart;
   companies: any;
   loader: boolean = false;
-  subscription: Subscription;
   timerIds = [];
   
   constructor(private snackBarService: SnackBarService, private router: ActivatedRoute, private _snackBar: MatSnackBar, private restService: RestService) {
@@ -159,7 +157,7 @@ export class StockDashboardComponent implements OnInit , OnDestroy{
                 if (data && data.length > 0) {
                   // updating lastUpdatedtime with current stock data
                   this.lastUpdatedTime = data[(data.length - 1)].date;
-                  this.stock.ref$.subscribe(chart => {
+                  this.stock.ref$.pipe(take(1)).subscribe(chart => {
                     for (var i = 0; i < data.length; i++) {
                       chart.series[0].addPoint([data[i].date, parseInt(data[i].currentValue)]);
                     }
