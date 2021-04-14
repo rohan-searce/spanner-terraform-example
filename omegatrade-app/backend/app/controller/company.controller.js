@@ -1,5 +1,6 @@
 'use strict';
 const Company = require('../models/company.model')
+const logService = require('../helpers/logservice');
 const { v4: uuidv4 } = require('uuid');
 
 /**
@@ -8,15 +9,11 @@ const { v4: uuidv4 } = require('uuid');
  */
 exports.getList = async function (req, res) {
     try {
-        await Company.getAll(function (err, data) {
-            if (err)
-                return res.json({ success: false, message: "Something went wrong" });
-            if (data) {
-                return res.status(200).json({ success: true, data: data });
-            }
-        });
+        const companies = await Company.getAll();
+        return res.status(200).json({ success: true, data: companies });
     } catch (error) {
-        return res.status(500).json({ success: false, message: error });
+        logService.writeLog('company.controller.getList',error);
+        return res.status(500).json({ success: false, message: 'Something went wrong while fetching all companies' });
     }
 };
 
@@ -28,23 +25,19 @@ exports.getList = async function (req, res) {
 exports.create = async function (req, res) {
     try {
         const body = req.body;
-        const [ company ] = await Company.checkCompany(body.companyName, body.companyShortCode);
+        const [company] = await Company.checkCompany(body.companyName, body.companyShortCode);
+        // check if  company is already added or not. 
         if (company && company.length > 0) {
-            return res.status(409).json({ success: false, message: "company already exists!" });
+            return res.status(409).json({ success: false, message: "Company already exists" });
         } else {
             body.companyId = uuidv4();
             body.created_at = 'spanner.commit_timestamp()';
-            await Company.create(body, function (err, data) {
-                if (err) {
-                    return res.json({ success: false, message: "Something went wrong" });
-                }
-                if (data) {
-                    return res.status(200).json({ success: true, message: "company created successfully" });
-                }
-            });
+            await Company.create(body);
+            return res.status(200).json({ success: true, message: "Company created successfully" });
         }
     } catch (error) {
-        return res.status(500).json({ success: false, message: "Something went wrong" });
+        logService.writeLog('company.controller.create',error);
+        return res.status(500).json({ success: false, message: "Something went wrong while creating a new company." });
     }
 };
 
@@ -58,19 +51,17 @@ exports.update = async function (req, res) {
         const body = req.body;
         const companyId = req.params.companyId
         if (body && companyId) {
-            await Company.update(body, function (err, data) {
-                if (err) {
-                    return res.json({ success: false, message: "Something went wrong" });
-                }
-                else {
-                    return res.status(200).json({ success: true, message: "Company details updated sucessfully!" });
-                }
-            });
+            await Company.update(body)
+            return res.status(200).json({ success: true, message: "Company details updated sucessfully!" });
         } else {
-            res.status(501).json({ success: false, message: "Invalid data" });
+            res.status(501).json({
+                success: false, message: `Something went wrong while updating a company,
+                please check that the data you entered are valid.`
+            });
         }
     } catch (error) {
-        return res.status(500).json({ success: false, message: "Something went wrong" });
+        logService.writeLog('company.controller.update',error);
+        return res.status(500).json({ success: false, message: "Something went wrong while updating a company." });
     }
 }
 
@@ -82,16 +73,12 @@ exports.update = async function (req, res) {
 exports.delete = async function (req, res) {
     try {
         const companyId = req.params.companyId;
-        await Company.delete(companyId, function (err, data) {
-            if (err) {
-                res.json({ success: false, message: "Something went wrong" });
-            }
-            if (data) {
-                res.status(200).json({success: true,message: "company deleted!"});
-            }
-        });
+        await Company.delete(companyId);
+        res.status(200).json({ success: true, message: "company deleted!" });
     } catch (error) {
-        return res.status(500).json({ success: false, message: "Something went wrong" });
+        const { message, code, stack } = error;
+        logService.writeLog('company.controller.delete', message, code, stack);
+        return res.status(500).json({ success: false, message: "Something went wrong while deleting a company." });
     }
 };
 

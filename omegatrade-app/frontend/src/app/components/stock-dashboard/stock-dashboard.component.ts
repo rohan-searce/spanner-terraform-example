@@ -194,13 +194,10 @@ export class StockDashboardComponent implements OnInit , OnDestroy{
    * Function to clear all timeout functions
    */
   clearAllTimeOuts() {
-    if(this.timerIds && this.timerIds.length>0){
-      let len = this.timerIds.length;
+    if (this.timerIds && this.timerIds.length > 0) {
       const ids = this.timerIds;
-      while (len > 0) {
-        const id = ids[len - 1];
-       clearTimeout(id);
-        len--;
+      for (var i = 0; i < ids.length; i++) {
+        clearTimeout(ids[i]);
       }
     }
   }
