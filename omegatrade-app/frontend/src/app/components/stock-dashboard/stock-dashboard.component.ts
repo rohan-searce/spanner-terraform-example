@@ -101,9 +101,11 @@ export class StockDashboardComponent implements OnInit , OnDestroy{
     }
   }
   /**
-   * Function to parse the stocks and form as per the chart data format
-   * @param stocks  Unformatted stocks data
-   * @param company 
+   * Function to parse the stocks and form as per the chart data format.
+   * updates the lastUpatedTime and redraws the chart
+   * 
+   * @param stocks  contains unformatted stocks data
+   * @param company contains company information - companyName,shortCode and status
    */
   parseStockDatas(stocks,company) {
     const chartData = [];
@@ -117,7 +119,7 @@ export class StockDashboardComponent implements OnInit , OnDestroy{
   /**
    * Function to draw new chart for a company
    * @param chartData Formatted chart data
-   * @param company 
+   * @param company contains company information.
    */
   createChart(chartData,company) {
     this.stock = new StockChart({
@@ -203,9 +205,6 @@ export class StockDashboardComponent implements OnInit , OnDestroy{
   ngOnDestroy() {
     this.clearAllTimeOuts();
   }
-
-  
-
 }
 
 

@@ -4,8 +4,9 @@ const logService = require('../helpers/logservice');
 
 /**
  * Function to get stockdata of a company
- * @param {\} req 
- * @param {*} res 
+ * @method GET
+ * 
+ * @param {\} req request headers and payload parameter of companyId and date.
  */
 exports.getStockData = async function (req, res) {
     try {

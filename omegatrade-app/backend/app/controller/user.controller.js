@@ -16,7 +16,7 @@ exports.register = async function (req, res) {
         const body = req.body;
         const [registerUser] = await User.findUser(body.businessEmail);
         if (registerUser && registerUser.userId) {
-            return res.status(400).json({ success: false, message: 'Registration Failed, Email Already Exists!' });
+            return res.status(400).json({ success: false, message: 'Registration failed, Email already exists!' });
         }
         const salt = await bcrypt.genSalt(10);
         const password = await bcrypt.hash(body.password, salt);
@@ -57,10 +57,10 @@ exports.login = async function (req, res) {
                 });
                 return res.status(200).json({ success: true, message: 'Logged in successfully', userInfo: user, authToken: token });
             } else {
-                return res.status(401).json({ success: false, message: 'Login Failed.' });
+                return res.status(401).json({ success: false, message: 'Login failed.' });
             }
         } else {
-            return res.status(401).json({ success: false, message: 'please register your account before login!' });
+            return res.status(401).json({ success: false, message: 'Please register your account before login!' });
         }
     } catch (error) {
         logService.writeLog('user.controller.login', error);

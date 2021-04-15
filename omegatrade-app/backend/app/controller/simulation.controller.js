@@ -53,17 +53,22 @@ exports.deleteSimulation = async function (req, res) {
         const sId = req.params.sId;
         if (sId) {
             await Simulation.deleteById(sId)
-            return res.status(200).json({ success: true, message: 'deleted sucessfully' });
+            return res.status(200).json({ success: true, message: 'Deleted successfully' });
         }
         else {
-            return res.status(501).json({ success: false, message: "Deletion Failed, please check the data" });
+            return res.status(501).json({ success: false, message: "Deletion Failed, please check the data." });
         }
     } catch (err) {
         logService.writeLog('simulation.controller.deleteSimulation', error);
-        return res.status(500).json({ success: false, "message": "something went wrong while deleting a company" });
+        return res.status(500).json({ success: false, "message": "Something went wrong while deleting a company" });
     }
 };
 
+/**
+ * Function to simulate stock data
+ * 
+ * @method POST
+ */
 exports.startSimulation = async function (req, res) {
     try {
         const body = req.body;
@@ -112,7 +117,7 @@ exports.startSimulation = async function (req, res) {
             }, interval);
             return res.status(200).json({ success: true, sId: sId, message: "Simulation started" });
         } else {
-            return res.status(501).json({ success: false, message: "Simulation Failed, please check the data" });
+            return res.status(501).json({ success: false, message: "Simulation failed, please check the data" });
         }
     } catch (error) {
         logService.writeLog('simulation.controller.startSimulation', error);
