@@ -33,7 +33,7 @@ exports.updateSimulation = async function (req, res) {
         const body = req.body;
         if (body) {
             await Simulation.updateById(body)
-            return res.status(200).json({ success: true, message: `Simulation ${body.status}  sucessfully` });
+            return res.status(200).json({ success: true, message: `Simulation ${body.status} updated successfully` });
         } else {
             return res.status(501).json({ success: false, message: "Update failed, please check the data" });
         }
@@ -119,7 +119,6 @@ exports.startSimulation = async function (req, res) {
         return res.status(500).json({ success: false, "message": "Something went wrong while starting simulation" });
     }
 }
-
 
 
 
