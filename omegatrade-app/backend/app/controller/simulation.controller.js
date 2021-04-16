@@ -44,7 +44,7 @@ exports.updateSimulation = async function (req, res) {
 }
 
 /**
- * Function to Delete simulation
+ * Function to delete simulation
  * 
  * @method DELETE
  */
@@ -119,7 +119,6 @@ exports.startSimulation = async function (req, res) {
         return res.status(500).json({ success: false, "message": "Something went wrong while starting simulation" });
     }
 }
-
 
 
 
