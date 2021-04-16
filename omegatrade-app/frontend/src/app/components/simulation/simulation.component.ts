@@ -69,7 +69,7 @@ export class SimulationComponent implements OnInit {
 
   deleteSimulation(simulation) {
     if(simulation && simulation.sId && simulation.companyName){
-      const dialogData = new ConfirmDialogModel("Confirm Action", `Are you sure you want to delete simulation for  ${simulation.companyName}?`);
+      const dialogData = new ConfirmDialogModel("Confirm Action", `Are you sure you want to delete simulation for ${simulation.companyName}?`);
       const dialogRef = this.dialog.open(ConfirmDialogComponent, {
         maxWidth: "400px",
         data: dialogData
@@ -201,6 +201,5 @@ export interface SimuationData {
   status: boolean;
   companyId: String;
 }
-
 
 
