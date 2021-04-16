@@ -19,7 +19,7 @@ exports.getList = async function (req, res) {
         return res.status(200).json({ success: true, data: simulation });
     } catch (error) {
         logService.writeLog('simulation.controller.getList', error);
-        return res.status(500).json({ success: false, message: "Something went wrong  while fetching all Simulations" });
+        return res.status(500).json({ success: false, message: "Something went wrong while fetching all simulations" });
     }
 };
 
@@ -119,6 +119,5 @@ exports.startSimulation = async function (req, res) {
         return res.status(500).json({ success: false, "message": "Something went wrong while starting simulation" });
     }
 }
-
 
 
