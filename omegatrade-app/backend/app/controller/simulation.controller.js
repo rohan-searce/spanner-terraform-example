@@ -56,7 +56,7 @@ exports.deleteSimulation = async function (req, res) {
             return res.status(200).json({ success: true, message: 'deleted sucessfully' });
         }
         else {
-            return res.status(501).json({ success: false, message: "Deletion Failed, please check the data" });
+            return res.status(501).json({ success: false, message: "Deletion failed, please check the data" });
         }
     } catch (err) {
         logService.writeLog('simulation.controller.deleteSimulation', error);
@@ -119,7 +119,6 @@ exports.startSimulation = async function (req, res) {
         return res.status(500).json({ success: false, "message": "Something went wrong while starting simulation" });
     }
 }
-
 
 
 
