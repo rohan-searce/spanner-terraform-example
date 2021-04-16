@@ -53,7 +53,7 @@ exports.deleteSimulation = async function (req, res) {
         const sId = req.params.sId;
         if (sId) {
             await Simulation.deleteById(sId)
-            return res.status(200).json({ success: true, message: 'deleted sucessfully' });
+            return res.status(200).json({ success: true, message: 'deleted successfully' });
         }
         else {
             return res.status(501).json({ success: false, message: "Deletion failed, please check the data" });
@@ -119,7 +119,6 @@ exports.startSimulation = async function (req, res) {
         return res.status(500).json({ success: false, "message": "Something went wrong while starting simulation" });
     }
 }
-
 
 
 
