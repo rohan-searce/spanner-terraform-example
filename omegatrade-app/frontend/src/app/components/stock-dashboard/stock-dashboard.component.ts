@@ -102,7 +102,7 @@ export class StockDashboardComponent implements OnInit , OnDestroy{
   }
   /**
    * Function to parse the stocks and form as per the chart data format.
-   * updates the lastUpatedTime and redraws the chart
+   * updates the lastUpatedTime and redraws the chart.
    * 
    * @param stocks  contains unformatted stocks data
    * @param company contains company information - companyName,shortCode and status

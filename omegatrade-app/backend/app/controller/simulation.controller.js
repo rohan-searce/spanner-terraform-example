@@ -19,7 +19,7 @@ exports.getList = async function (req, res) {
         return res.status(200).json({ success: true, data: simulation });
     } catch (error) {
         logService.writeLog('simulation.controller.getList', error);
-        return res.status(500).json({ success: false, message: "Something went wrong  while fetching all Simulations" });
+        return res.status(500).json({ success: false, message: "Something went wrong while fetching all simulations" });
     }
 };
 
@@ -33,7 +33,7 @@ exports.updateSimulation = async function (req, res) {
         const body = req.body;
         if (body) {
             await Simulation.updateById(body)
-            return res.status(200).json({ success: true, message: `Simulation ${body.status}  sucessfully` });
+            return res.status(200).json({ success: true, message: `Simulation ${body.status} updated successfully` });
         } else {
             return res.status(501).json({ success: false, message: "Update failed, please check the data" });
         }
@@ -44,7 +44,7 @@ exports.updateSimulation = async function (req, res) {
 }
 
 /**
- * Function to Delete simulation
+ * Function to delete simulation
  * 
  * @method DELETE
  */
@@ -53,10 +53,10 @@ exports.deleteSimulation = async function (req, res) {
         const sId = req.params.sId;
         if (sId) {
             await Simulation.deleteById(sId)
-            return res.status(200).json({ success: true, message: 'Deleted successfully' });
+            return res.status(200).json({ success: true, message: 'deleted successfully' });
         }
         else {
-            return res.status(501).json({ success: false, message: "Deletion Failed, please check the data." });
+            return res.status(501).json({ success: false, message: "Deletion failed, please check the data" });
         }
     } catch (err) {
         logService.writeLog('simulation.controller.deleteSimulation', error);
@@ -124,10 +124,5 @@ exports.startSimulation = async function (req, res) {
         return res.status(500).json({ success: false, "message": "Something went wrong while starting simulation" });
     }
 }
-
-
-
-
-
 
 
