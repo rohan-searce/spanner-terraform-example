@@ -37,6 +37,9 @@ export class SimulationComponent implements OnInit {
   constructor(private snackBarService: SnackBarService, private restService: RestService, private formBuilder: FormBuilder, public dialog: MatDialog, private router: Router) {
   }
 
+  /**
+   *  Function to Initiate component.
+   */ 
   ngOnInit(): void {
     this.getCompanies();
     this.simulateForm = this.formBuilder.group({
@@ -46,11 +49,18 @@ export class SimulationComponent implements OnInit {
     });
   }
 
+  /**
+   * Initalize and upates simulation table sort and pagination.
+   */
   initializeSortAndPagination() {
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
   }
-
+  
+  /**
+   *  Function to get companies lists,
+   *  and call simulation lists.
+   */
   getCompanies() {
     this.restService.getData('companies/list')
       .pipe(take(1))
@@ -68,6 +78,10 @@ export class SimulationComponent implements OnInit {
         });
   }
 
+  /**
+   * Function to delete simulation.
+   * @param simulation contains company's simulation.
+   */
   deleteSimulation(simulation) {
     if(simulation && simulation.sId && simulation.companyName){
       const dialogData = new ConfirmDialogModel("Confirm Action", `Are you sure you want to delete simulation for ${simulation.companyName}?`);
@@ -105,6 +119,10 @@ export class SimulationComponent implements OnInit {
     }
   }
 
+  /**
+   * Function to start simulation. 
+   *  
+   */
   simulate(formDirective: FormGroupDirective) {
     if(this.runningSimulation >= this.maxAllowedSimulation){
       this.snackBarService.openSnackBar(`Cannot simulate more than ${this.maxAllowedSimulation} simulations`, '');
@@ -131,6 +149,11 @@ export class SimulationComponent implements OnInit {
         });
   }
 
+  /**
+   * Get simulation lists and form material table.
+   * MatTableDataSource that accepts a simulation data array and includes native support of filtering, sorting (using MatSort),
+   * and pagination (using MatPaginator).
+   */
   getSimulations() {
     this.loader = true;
     this.restService.getData('simulations/list')
@@ -157,9 +180,17 @@ export class SimulationComponent implements OnInit {
         });
   }
 
-  updateSimulation(simulation,status) {
+ /**
+  * Function to update simulation.
+  * @param sId {string} unique simulation id
+  * @param status  using three types of simulation status.
+  * PROCESSING - simulation is running.
+  * STOPPED - simulation stopped.
+  * COMPLETED - simulation completed for particular company.
+  */
+  updateSimulation(sId,status) {
     this.loader = true;
-    const payLoad = { sId: simulation.sId, status: status }
+    const payLoad = { sId: sId, status: status }
     this.restService.putData(`simulations/update`, payLoad)
       .pipe(take(1))
       .subscribe(
@@ -179,15 +210,25 @@ export class SimulationComponent implements OnInit {
 
   }
 
-  updateCompanyStatus(id: string, value: boolean = false) {
+  /**
+   * Function to avoid duplicate company simulation.
+   * Disable a company in selection box if simulaton already started 
+   * and enables if simulation deleted.
+   * @param id company id.
+   * @param disableVal contains boolean
+   */
+  updateCompanyStatus(id: string, disableVal: boolean = false) {
     if (id) {
       const index = this.companies.findIndex(company => company.companyId === id);
       if (index > -1) {
-        this.companies[index].isAlreadyStarted = value;
+        this.companies[index].disable = disableVal;
       }
     }
   }
 
+  /**
+   * Function to apply Filter on simulation datasource.
+   */
   applyFilter() {
     this.dataSource.filter = this.searchInput.trim().toLowerCase();
   }
@@ -198,7 +239,7 @@ export interface SimuationData {
   sId: string;
   companyName: string;
   companyShortCode: string;
-  status: boolean;
+  status: String;
   companyId: String;
 }
 
