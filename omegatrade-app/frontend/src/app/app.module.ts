@@ -4,6 +4,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
+import { ChartModule } from 'angular-highcharts';
 import { LoginComponent } from './components/login/login.component';
 import { ValidationService } from './services/validation.service';
 import { ControlMessagesComponent } from './components/control-messages/control-messages.component';
@@ -18,8 +19,10 @@ import { HttpConfigInterceptor} from './interceptor/httpconfig.interceptor';
 import { ManageCompanyComponent } from './components/company/manage-company/manage-company.component';
 import { UpdateCompanyComponent } from './components/company/update-company/update-company.component';
 import { SidebarComponent } from './components/sidebar/sidebar.component';
+import { SimulationComponent } from './components/simulation/simulation.component';
 import { HeaderComponent } from './components/header/header.component';
 import { ConfirmDialogComponent } from './components/confirm-dialog/confirm-dialog.component';
+import { StockDashboardComponent } from './components/stock-dashboard/stock-dashboard.component';
 
 
 
@@ -32,8 +35,10 @@ import { ConfirmDialogComponent } from './components/confirm-dialog/confirm-dial
     ManageCompanyComponent,
     UpdateCompanyComponent,
     SidebarComponent,
+    SimulationComponent,
     HeaderComponent,
-    ConfirmDialogComponent
+    ConfirmDialogComponent,
+    StockDashboardComponent
   ],
   entryComponents: [
   ],
@@ -45,7 +50,8 @@ import { ConfirmDialogComponent } from './components/confirm-dialog/confirm-dial
     BrowserAnimationsModule,
     MaterialModule,
     HttpClientModule,
-    SocialLoginModule
+    SocialLoginModule,
+    ChartModule,
   ],
   exports: [ControlMessagesComponent],
   providers: [ValidationService, AuthGuardService, TokenStorageService,

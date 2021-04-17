@@ -2,58 +2,91 @@
 const database = require('./../config/database.js');
 const Company = function () { };
 
-Company.getAll = async function (cb) {
-    try {
-        const [ companies ] = await database.run({ sql: 'select companyId , companyName , companyShortCode , created_at from companies', json: true, });
-        cb(null, companies)
-    } catch (error) {
-        cb(error, null)
-    }
+Company.getAll = async function () {
+    const [companies] = await database.run({
+        sql: `SELECT companyId , companyName , companyShortCode , created_at 
+              FROM companies`,
+        json: true,
+    });
+    return companies;
 }
 
-Company.create = async function (data, result) {
-    try {
-        await database.table('companies').insert(data);
-        result(null, data.companyId);
-    } catch (error) {
-        result(error, null);
-    }
+Company.create = async function (companyObj) {
+    await database.table('companies').insert(companyObj);
+    return companyObj.companyId
 };
 
 Company.checkCompany = async function (companyName, companyShortCode) {
-    try {
-        const query = {
-            sql: 'select companyName , companyShortCode from companies where companyName = @companyName or companyShortCode = @companyShortCode LIMIT 1',
-            params: {
-                companyName: companyName,
-                companyShortCode: companyShortCode
-            },
-            json: true
-        }
-        return await database.run(query);
-    } catch (error) {
-        throw ("Error Occurred!", error);
-    }
+    const company = await database.run({
+        sql: `SELECT companyName , companyShortCode 
+              FROM companies 
+              WHERE companyName = @companyName OR companyShortCode = @companyShortCode 
+              LIMIT 1`,
+        params: {
+            companyName: companyName,
+            companyShortCode: companyShortCode
+        },
+        json: true
+    });
+    return company;
 };
 
-Company.delete = async function (companyId, cb) {
-    try {
-        const company = database.table('companies');
-        const result =  await company.deleteRows([companyId]);
-        cb(null, result)
-    } catch (error) {
-        cb(error, null);
-    }
+Company.delete = async function (companyId) {
+    return await database.table('companies').deleteRows([companyId]);
 }
 
-Company.update = async function (params, cb) {
-    const table = database.table('companies');
-    try {
-        await table.update([params]);
-        cb(null, true)
-    } catch (err) {
-        cb(err, null)
+Company.update = async function (companyObj) {
+    return await database.table('companies').update([companyObj]);
+}
+
+Company.findById = async function (companyId) {
+    return await database.run({
+        sql: `SELECT companyId , companyName , companyShortCode , created_at  
+              FROM companies 
+              WHERE companyId = @companyId`,
+        params: {
+            companyId: companyId,
+        },
+        json: true
+    });
+}
+
+Company.createStockData = async function (stockData) {
+    return database.table('companyStocks').insert(stockData)
+};
+
+Company.getCompanySimulation = async function (companyId) {
+    const fields = `companies.companyId,companies.companyName,companies.companyShortCode,simulations.status,simulations.sId`
+    const query = `SELECT ${fields}  
+        FROM companies 
+        LEFT JOIN simulations ON companies.companyId = simulations.companyId
+        WHERE companies.companyId = @companyId 
+        ORDER BY simulations.createdAt DESC
+        LIMIT 1`
+    const [result] = await database.run({
+        sql: query,
+        params: { companyId: companyId },
+        json: true
+    });
+    return result;
+};
+
+Company.getStocks = async function (companyId, date = null) {
+    const conditions = ['companyId = @companyId'];
+    const values = { companyId: companyId };
+    if (date) {
+        conditions.push('date > @date');
+        values.date = date;
     }
+    const [stockResult] = await database.run({
+        sql: `SELECT date , currentValue 
+                  FROM companyStocks  
+                  WHERE  ${conditions.join(' AND ')}  
+                  ORDER BY date`,
+        params: values,
+        json: true
+    });
+    return stockResult;
 }
 
 module.exports = Company

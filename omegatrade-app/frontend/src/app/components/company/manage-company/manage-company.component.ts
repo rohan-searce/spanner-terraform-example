@@ -1,4 +1,4 @@
-import { Component, ViewChild, OnInit ,AfterViewInit } from '@angular/core';
+import { Component, ViewChild, OnInit } from '@angular/core';
 import { MatSort } from '@angular/material/sort';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
@@ -15,7 +15,7 @@ import { take } from "rxjs/operators";
   styleUrls: ['./manage-company.component.css']
 })
 
-export class ManageCompanyComponent implements OnInit , AfterViewInit{
+export class ManageCompanyComponent implements OnInit {
   displayedColumns: string[] = ['companyName', 'companyShortCode', 'action'];
   dataSource: MatTableDataSource<CompanyData>;
   @ViewChild(MatPaginator, { static: true }) paginator: MatPaginator;

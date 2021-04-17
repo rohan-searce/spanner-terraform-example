@@ -11,7 +11,7 @@ module.exports = {
             const options = {
                 expiresIn: process.env.EXPIRE_IN
             };
-            jwt.verify(token, process.env.JWT_SECRET, options, async (err, result) => {
+            jwt.verify(token, process.env.JWT_KEY, options, async (err, result) => {
                 if (err) {
                     return res.status(401).send({ message: `Session expired, please try to login again.`, success: false });
                 }
