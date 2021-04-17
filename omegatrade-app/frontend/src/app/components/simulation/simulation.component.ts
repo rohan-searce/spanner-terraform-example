@@ -8,6 +8,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { ConfirmDialogModel, ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog.component';
 import { RestService } from '../../services/rest.service';
 import { take } from 'rxjs/operators';
+import { Router } from '@angular/router';
 
 
 @Component({
@@ -33,7 +34,7 @@ export class SimulationComponent implements OnInit {
   runningSimulation = 0;
   maxAllowedSimulation = 3;
 
-  constructor(private snackBarService: SnackBarService, private restService: RestService, private formBuilder: FormBuilder, public dialog: MatDialog) {
+  constructor(private snackBarService: SnackBarService, private restService: RestService, private formBuilder: FormBuilder, public dialog: MatDialog, private router: Router) {
   }
 
   ngOnInit(): void {
@@ -138,7 +139,6 @@ export class SimulationComponent implements OnInit {
         response => {
           if (response && response.success) {
             this.runningSimulation = response.data.length;
-            console.log(this.runningSimulation);
             this.dataSource = new MatTableDataSource(response.data);
             this.initializeSortAndPagination();
             if (response.data && response.data.length > 0) {
@@ -157,9 +157,9 @@ export class SimulationComponent implements OnInit {
         });
   }
 
-  updateSimulation(simulation) {
+  updateSimulation(simulation,status) {
     this.loader = true;
-    const payLoad = { sId: simulation.sId, status: (simulation.status) ? false : true }
+    const payLoad = { sId: simulation.sId, status: status }
     this.restService.putData(`simulations/update`, payLoad)
       .pipe(take(1))
       .subscribe(

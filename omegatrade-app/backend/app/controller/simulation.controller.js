@@ -2,7 +2,7 @@
 const Simulation = require('../models/simulation.model')
 const Company = require('../models/company.model')
 const { v4: uuidv4 } = require('uuid');
-const { spannerNumericRandVal, spannerNumericRandValBetween, generateRandomValue } = require('../helpers/stockdata.helper');
+const { spannerNumericVal, spannerNumericRandValBetween, generateRandomValue } = require('../helpers/stockdata.helper');
 const fakeStockmarketgenerator = require('fake-stock-market-generator');
 const { Spanner } = require('@google-cloud/spanner');
 const logService = require('../helpers/logservice');
@@ -60,10 +60,15 @@ exports.deleteSimulation = async function (req, res) {
         }
     } catch (err) {
         logService.writeLog('simulation.controller.deleteSimulation', error);
-        return res.status(500).json({ success: false, "message": "something went wrong while deleting a company" });
+        return res.status(500).json({ success: false, "message": "Something went wrong while deleting a company" });
     }
 };
 
+/**
+ * Function to simulate stock data
+ * 
+ * @method POST
+ */
 exports.startSimulation = async function (req, res) {
     try {
         const body = req.body;
@@ -112,7 +117,7 @@ exports.startSimulation = async function (req, res) {
             }, interval);
             return res.status(200).json({ success: true, sId: sId, message: "Simulation started" });
         } else {
-            return res.status(501).json({ success: false, message: "Simulation Failed, please check the data" });
+            return res.status(501).json({ success: false, message: "Simulation failed, please check the data" });
         }
     } catch (error) {
         logService.writeLog('simulation.controller.startSimulation', error);

@@ -55,4 +55,38 @@ Company.createStockData = async function (stockData) {
     return database.table('companyStocks').insert(stockData)
 };
 
+Company.getCompanySimulation = async function (companyId) {
+    const fields = `companies.companyId,companies.companyName,companies.companyShortCode,simulations.status,simulations.sId`
+    const query = `SELECT ${fields}  
+        FROM companies 
+        LEFT JOIN simulations ON companies.companyId = simulations.companyId
+        WHERE companies.companyId = @companyId 
+        ORDER BY simulations.createdAt DESC
+        LIMIT 1`
+    const [result] = await database.run({
+        sql: query,
+        params: { companyId: companyId },
+        json: true
+    });
+    return result;
+};
+
+Company.getStocks = async function (companyId, date = null) {
+    const conditions = ['companyId = @companyId'];
+    const values = { companyId: companyId };
+    if (date) {
+        conditions.push('date > @date');
+        values.date = date;
+    }
+    const [stockResult] = await database.run({
+        sql: `SELECT date , currentValue 
+                  FROM companyStocks  
+                  WHERE  ${conditions.join(' AND ')}  
+                  ORDER BY date`,
+        params: values,
+        json: true
+    });
+    return stockResult;
+}
+
 module.exports = Company
