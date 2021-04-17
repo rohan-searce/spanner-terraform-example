@@ -85,6 +85,8 @@ exports.getToken = async function (req, res) {
                     user.provider = body.provider;
                     user.photoUrl = body.photoUrl;
                     await User.update(user)
+                }else if(user.provider !== 'GOOGLE'){
+                    return res.status(422).json({ success: false, message: 'The user is not a Google user.' });
                 }
                 const token = jwt.sign(user, process.env.JWT_KEY, {
                     expiresIn: process.env.EXPIRE_IN
@@ -96,6 +98,6 @@ exports.getToken = async function (req, res) {
         }
     } catch (error) {
         logService.writeLog('user.controller.getToken', error);
-        return res.status(500).json({ success: false, message: 'Something went wrong,Error while authenticating user!' });
+        return res.status(500).json({ success: false, message: 'Something went wrong,error while authenticating user!' });
     }
 };
