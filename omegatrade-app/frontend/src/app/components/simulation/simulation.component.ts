@@ -91,7 +91,7 @@ export class SimulationComponent implements OnInit {
       });
       dialogRef.afterClosed().pipe(take(1)).subscribe(dialogResult => {
         if (dialogResult === true) {
-          this.restService.deleteData(`simulations/delete/${simulation.sId}`)
+          this.restService.deleteData(`simulations/delete/${simulation.sId}/${simulation.companyId}`)
             .pipe(take(1))
             .subscribe(
               response => {
@@ -188,9 +188,9 @@ export class SimulationComponent implements OnInit {
   * STOPPED - simulation stopped.
   * COMPLETED - simulation completed for particular company.
   */
-  updateSimulation(sId,status) {
+  updateSimulation(sId,companyId,status) {
     this.loader = true;
-    const payLoad = { sId: sId, status: status }
+    const payLoad = { sId: sId, companyId: companyId, status: status }
     this.restService.putData(`simulations/update`, payLoad)
       .pipe(take(1))
       .subscribe(

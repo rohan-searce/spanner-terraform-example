@@ -51,11 +51,11 @@ Simulation.create = async function (companyId) {
     return sId;
 };
 
-Simulation.deleteById = async function (sId) {
-    return await database.table('simulations').deleteRows([sId]);
+Simulation.deleteById = async function (rows) {
+    return await database.table('simulations').deleteRows([rows]);
 }
 
-Simulation.updateById = async function (simulation) {
+Simulation.update = async function (simulation) {
     return await database.table('simulations').update([simulation]);
 }
 

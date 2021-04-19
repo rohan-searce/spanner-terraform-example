@@ -2,9 +2,9 @@ const jwt = require('jsonwebtoken');
 
 module.exports = {
     validateToken: (req, res, next) => {
-        const authorizationHeaader = req.headers.authorization;
-        if (authorizationHeaader) {
-            const token = authorizationHeaader.split(' ')[1]; // Bearer <token>
+        const authorizationHeader = req.headers.authorization;
+        if (authorizationHeader) {
+            const token = authorizationHeader.split(' ')[1]; // Bearer <token>
             if (token === null) {
                 return res.status(401).send({ message: `Authentication error`, success: false });
             }

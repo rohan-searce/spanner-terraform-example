@@ -32,7 +32,7 @@ exports.updateSimulation = async function (req, res) {
     try {
         const body = req.body;
         if (body) {
-            await Simulation.updateById(body)
+            await Simulation.update(body)
             return res.status(200).json({ success: true, message: `Simulation ${body.status} updated successfully` });
         } else {
             return res.status(501).json({ success: false, message: "Update failed, please check the data" });
@@ -51,14 +51,15 @@ exports.updateSimulation = async function (req, res) {
 exports.deleteSimulation = async function (req, res) {
     try {
         const sId = req.params.sId;
-        if (sId) {
-            await Simulation.deleteById(sId)
+        const companyId = req.params.companyId;
+        if (sId && companyId) {
+            await Simulation.deleteById([companyId,sId])
             return res.status(200).json({ success: true, message: 'deleted successfully' });
         }
         else {
             return res.status(501).json({ success: false, message: "Deletion failed, please check the data" });
         }
-    } catch (err) {
+    } catch (error) {
         logService.writeLog('simulation.controller.deleteSimulation', error);
         return res.status(500).json({ success: false, "message": "Something went wrong while deleting a company" });
     }
@@ -110,7 +111,7 @@ exports.startSimulation = async function (req, res) {
                 // clears the interval when stockDataCount reaches value given in data.
                 if (stockDataCount === (body.data - 1)) {
                     // update completed status
-                    await Simulation.updateById({ sId: sId, status: 'COMPLETED' })
+                    await Simulation.update({ sId: sId, companyId: body.companyId, status: 'COMPLETED' })
                     clearInterval(intervalId)
                 }
                 stockDataCount++;

@@ -76,8 +76,7 @@ exports.delete = async function (req, res) {
         await Company.delete(companyId);
         res.status(200).json({ success: true, message: "company deleted!" });
     } catch (error) {
-        const { message, code, stack } = error;
-        logService.writeLog('company.controller.delete', message, code, stack);
+        logService.writeLog('company.controller.delete', error);
         return res.status(500).json({ success: false, message: "Something went wrong while deleting a company." });
     }
 };
