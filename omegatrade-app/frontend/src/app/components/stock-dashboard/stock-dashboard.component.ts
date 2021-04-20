@@ -153,7 +153,7 @@ export class StockDashboardComponent implements OnInit , OnDestroy{
               const data = response.data.stocks;
               const company = response.data.company;
               if (company.status == 'COMPLETED' || company.status === null) {
-                  // Canceling Subscrition when simulation completed
+                  // Canceling subscription when simulation completed
                   this.clearAllTimeOuts()
               } else {
                 if (data && data.length > 0) {
@@ -206,7 +206,6 @@ export class StockDashboardComponent implements OnInit , OnDestroy{
     this.clearAllTimeOuts();
   }
 }
-
 
 
 
