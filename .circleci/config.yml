@@ -37,6 +37,7 @@ jobs:
     docker:
       - image: google/cloud-sdk 
     environment:
+      - GCP_PROJECT_ID: "searce-academy"
       - WORKDIR: "omegatrade-app/backend/"
     steps:
       - checkout
