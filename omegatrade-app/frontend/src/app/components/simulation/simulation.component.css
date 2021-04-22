@@ -15,10 +15,10 @@ table {
     width: 100%;
 }
 .simulate-list-title , .simulate-title{
-font-size: 18px
+    font-size: 18px
 }
 .simulate-list-section , .simulate-section{
-margin: auto;    
+    margin: auto;    
 }
 th.mat-sort-header-sorted {
     color: black;

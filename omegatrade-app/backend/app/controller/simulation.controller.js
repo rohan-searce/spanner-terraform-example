@@ -35,7 +35,7 @@ exports.updateSimulation = async function (req, res) {
             await Simulation.update(body)
             return res.status(200).json({ success: true, message: `Simulation ${body.status} updated successfully` });
         } else {
-            return res.status(501).json({ success: false, message: "Update failed, please check the data" });
+            return res.status(422).json({ success: false, message: "Update failed, please check the data" });
         }
     } catch (error) {
         logService.writeLog('simulation.controller.updateSimulation', error);
@@ -57,7 +57,7 @@ exports.deleteSimulation = async function (req, res) {
             return res.status(200).json({ success: true, message: 'deleted successfully' });
         }
         else {
-            return res.status(501).json({ success: false, message: "Deletion failed, please check the data" });
+            return res.status(422).json({ success: false, message: "Deletion failed, please check the data" });
         }
     } catch (error) {
         logService.writeLog('simulation.controller.deleteSimulation', error);
@@ -118,7 +118,7 @@ exports.startSimulation = async function (req, res) {
             }, interval);
             return res.status(200).json({ success: true, sId: sId, message: "Simulation started" });
         } else {
-            return res.status(501).json({ success: false, message: "Simulation failed, please check the data" });
+            return res.status(422).json({ success: false, message: "Simulation failed, please check the data" });
         }
     } catch (error) {
         logService.writeLog('simulation.controller.startSimulation', error);
