@@ -24,8 +24,8 @@ const spannerNumericRandValBetween = (min, max, scale = null) => {
 }
 
 /**
- * Returns a random Integer number if @min and @max passed in parameter,
- * Returns a Random Number with two Decimal points if no parameter passed.
+ * Returns a random integer number between @min and @max if both are not null.
+ * Returns a random number between 0 and 1 with two decimal points if @min and/or @max is null.
  */
 const generateRandomValue = (min = null, max = null) => {
     if (min && max) {
