@@ -29,7 +29,7 @@ exports.register = async function (req, res) {
         await User.registerUser({ ...user, password });
         jwt.sign(user, process.env.JWT_KEY, { expiresIn: process.env.EXPIRE_IN }, function (err, token) {
             if (err) {
-                return res.status(400).json({ success: false, message: 'Something went wrong while registering new user!' });
+                return res.status(409).json({ success: false, message: 'Something went wrong while registering new user!' });
             }
             return res.status(200).json({ success: true, message: 'Registered successfully!', userInfo: user, authToken: token });
         });

@@ -54,7 +54,7 @@ exports.update = async function (req, res) {
             await Company.update(body)
             return res.status(200).json({ success: true, message: "Company details updated sucessfully!" });
         } else {
-            res.status(501).json({
+            res.status(422).json({
                 success: false, message: `Something went wrong while updating a company,
                 please check that the data you entered are valid.`
             });

@@ -88,7 +88,6 @@ exports.startSimulation = async function (req, res) {
                 const stockData = {
                     companyStockId: uuidv4(),
                     companyId: body.companyId,
-                    companyShortCode: company.companyShortCode,
                     date: Spanner.float(new Date().getTime()),
                     currentValue: spannerNumericVal(stock[stockDataCount].price),
                     open: spannerNumericVal(randomValue),
