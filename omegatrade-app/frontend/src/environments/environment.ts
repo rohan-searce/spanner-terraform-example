@@ -1,6 +1,8 @@
 export const environment = {
   production: false,
   name: "dev",
-  baseUrl:"https://omega-trade-backend-manage-simulations-i3nfvlaq3a-uw.a.run.app/api/v1/",
-  clientId:""
+  // change baseUrl according to backend URL
+  baseUrl:"[your-backend-url]]/api/v1",
+  // change clientId to actual value you have received from Oauth console
+  clientId:"[enter-clientId]"
 };
