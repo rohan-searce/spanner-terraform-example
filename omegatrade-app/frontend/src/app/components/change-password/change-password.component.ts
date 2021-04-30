@@ -1,5 +1,6 @@
 import { Component, OnInit, Inject } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { TokenStorageService } from '../../services/token-storage.service';
 import { FormBuilder, Validators, FormGroup } from '@angular/forms';
 import { RestService } from '../../services/rest.service';
 import { SnackBarService } from '../../services/snackbar.service';
@@ -16,8 +17,8 @@ export class ChangePasswordComponent implements OnInit {
   userForm: FormGroup;
   forceChangePassword:boolean = false;
   loader: boolean = false;
-
-  constructor(private snackBarService: SnackBarService, private restService: RestService, private formBuilder: FormBuilder, private dialogRef: MatDialogRef<ChangePasswordComponent>, @Inject(MAT_DIALOG_DATA) public data: any) {
+  
+  constructor(private snackBarService: SnackBarService, private restService: RestService, private formBuilder: FormBuilder, private dialogRef: MatDialogRef<ChangePasswordComponent>, @Inject(MAT_DIALOG_DATA) public data: any,private tokenService : TokenStorageService) {
     this.userForm = this.formBuilder.group({
       userId: ['', []],
       businessEmail: ['', [Validators.required]],
@@ -48,6 +49,7 @@ export class ChangePasswordComponent implements OnInit {
       .pipe(take(1))
       .subscribe(response => {
         if (response && response.success) {
+          this.tokenService.saveUser(response.user);
           this.dialogRef.close(response);
           this.snackBarService.openSnackBar(response.message, '');
         }

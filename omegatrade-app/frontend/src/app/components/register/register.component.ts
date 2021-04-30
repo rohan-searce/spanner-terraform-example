@@ -31,7 +31,7 @@ export class RegisterComponent implements OnInit {
       confirmPassword: ['', [Validators.required, Validators.minLength(6)]],
       provider: [''],
       photoUrl: ['']
-    });
+    },{validators: ValidationService.checkPasswords.bind(this)});
   }
 
   /**
@@ -52,7 +52,7 @@ export class RegisterComponent implements OnInit {
           response => {
             if (response && response.success) {
               this.tokenSuccessHandler(response);
-              const forceChangePassword = response.forceChangePassword;
+              const forceChangePassword = response.userInfo.forceChangePassword;
               if (forceChangePassword === true) {
                 this.changePassword({ ...response.userInfo, forceChangePassword })
               }
@@ -75,22 +75,20 @@ export class RegisterComponent implements OnInit {
    */
   signUp(): void {
     if (this.signUpForm.dirty && this.signUpForm.valid) {
-      if (this.signUpForm.value.password === this.signUpForm.value.confirmPassword) {
-        this.loader = true;
-        this.restService.postData('users/register-user', this.signUpForm.value)
-          .pipe(take(1))
-          .subscribe(
-            response => {
-              if (response && response.success) {
-                this.tokenSuccessHandler(response);
-              }
-              this.loader = false;
-            },
-            error => {
-              this.snackBarService.openSnackBar(error.error.message, '');
-              this.loader = false;
-            });
-      }
+      this.loader = true;
+      this.restService.postData('users/register-user', this.signUpForm.value)
+        .pipe(take(1))
+        .subscribe(
+          response => {
+            if (response && response.success) {
+              this.tokenSuccessHandler(response);
+            }
+            this.loader = false;
+          },
+          error => {
+            this.snackBarService.openSnackBar(error.error.message, '');
+            this.loader = false;
+          });
     }
   }
 

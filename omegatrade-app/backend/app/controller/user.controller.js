@@ -35,7 +35,7 @@ exports.register = async function (req, res) {
         });
     } catch (error) {
         logService.writeLog('user.controller.register', error);
-        return res.status(400).json({ success: false, message: 'Something went wrong while registering new user!' });
+        return res.status(500).json({ success: false, message: 'Something went wrong while registering new user!' });
     }
 };
 
@@ -102,13 +102,14 @@ exports.googleSignIn = async function (req, res) {
                 password: password,
                 photoUrl: body.photoUrl,
                 provider: body.provider,
+                forceChangePassword: true
             };
             await User.registerUser(user);
             jwt.sign(user, process.env.JWT_KEY, { expiresIn: process.env.EXPIRE_IN }, function (err, token) {
                 if (err) {
                     return res.status(500).json({ success: false, message: 'Something went wrong while registering new user!' });
                 }
-                return res.status(200).json({ success: true, message: 'Registered successfully!', forceChangePassword: true, userInfo: user, authToken: token });
+                return res.status(200).json({ success: true, message: 'Registered successfully!', userInfo: user, authToken: token });
             });
         }
         
@@ -125,8 +126,9 @@ exports.changePassword = async function (req, res) {
         if (user) {
             const salt = await bcrypt.genSalt(10);
             user.password = await bcrypt.hash(body.password, salt);
+            user.forceChangePassword = false;
             await User.update(user)
-            return res.status(200).json({ success: true, message: 'Password changed successfully' });
+            return res.status(200).json({ success: true, message: 'Password changed successfully', user: user });
         } else {
             return res.json({ success: false, message: 'Invalid data, please check details you have entered.' });
         }

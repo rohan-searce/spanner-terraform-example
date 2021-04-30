@@ -46,7 +46,7 @@ export class LoginComponent implements OnInit {
                     response => {
                         if (response && response.success) {
                             this.tokenSuccessHandler(response);
-                            const forceChangePassword = response.forceChangePassword;
+                            const forceChangePassword = response.userInfo.forceChangePassword;
                             if(forceChangePassword === true){
                                 this.changePassword({...response.userInfo,forceChangePassword})
                             }

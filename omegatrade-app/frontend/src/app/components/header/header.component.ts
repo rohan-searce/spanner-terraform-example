@@ -3,8 +3,6 @@ import { TokenStorageService } from '../../services/token-storage.service';
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { ChangePasswordComponent } from '../change-password/change-password.component';
-import { take } from "rxjs/operators";
-
 
 @Component({
   selector: 'app-header',
@@ -19,8 +17,13 @@ export class HeaderComponent implements OnInit,AfterViewInit {
     this.user = this.tokenService.getUser();
   }
 
+  /**
+   * Allow User to change password if user logged in for first time
+   */
   ngAfterViewInit() {
-  
+    if(this.user && this.user.forceChangePassword === true){
+      this.changePassword(true);
+    }
   }
 
   logOut(){
@@ -32,10 +35,11 @@ export class HeaderComponent implements OnInit,AfterViewInit {
    * Function to open change password component
    * 
    */
-  changePassword(){
+  changePassword(disableClose = false){
     this.dialog.open(ChangePasswordComponent, {
       width: '400px',
-      data: this.user
+      data: this.user,
+      disableClose: disableClose 
     });
   }
 }
