@@ -8,6 +8,8 @@ import { GoogleLoginProvider } from 'angularx-social-login';
 import { TokenStorageService } from '../../services/token-storage.service';
 import { SnackBarService } from '../../services/snackbar.service';
 import { take } from "rxjs/operators";
+import { ChangePasswordComponent } from '../change-password/change-password.component';
+import { MatDialog } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-register',
@@ -20,7 +22,7 @@ export class RegisterComponent implements OnInit {
   user: any;
   
   // tslint:disable-next-line: max-line-length
-  constructor(private snackBarService: SnackBarService, private tokenStorage: TokenStorageService, private formBuilder: FormBuilder, private restService: RestService, private router: Router, private authService: SocialAuthService) {
+  constructor(private snackBarService: SnackBarService, private tokenStorage: TokenStorageService, private formBuilder: FormBuilder, private restService: RestService, private router: Router, private authService: SocialAuthService,private dialog: MatDialog) {
     // Init sign-up form with form builder.
     this.signUpForm = this.formBuilder.group({
       fullName: ['', [Validators.required]],
@@ -44,18 +46,26 @@ export class RegisterComponent implements OnInit {
   signUpWithGoogle(): void {
     this.authService.signIn(GoogleLoginProvider.PROVIDER_ID).then(user => {
       this.loader = true;
-      this.signUpForm.setValue({
-        businessEmail: user.email,
-        fullName: user.name,
-        password: '',
-        confirmPassword: '',
-        photoUrl: user.photoUrl,
-        provider: user.provider
-      });
-      this.loader = false;
-      this.signUpForm.get('password').touched = true;
-      this.signUpForm.get('confirmPassword').touched = true;
-      this.snackBarService.openSnackBar('please provide password to complete your registration!', '');
+      this.restService.postData('users/google-sign-in', user)
+        .pipe(take(1))
+        .subscribe(
+          response => {
+            if (response && response.success) {
+              this.tokenSuccessHandler(response);
+              const forceChangePassword = response.forceChangePassword;
+              if (forceChangePassword === true) {
+                this.changePassword({ ...response.userInfo, forceChangePassword })
+              }
+            }
+            this.loader = false;
+          },
+          error => {
+            this.snackBarService.openSnackBar(error.error.message, '');
+            this.loader = false;
+            if (error.error && error.error.redirect === 'sign-up') {
+              this.router.navigateByUrl('/sign-up');
+            }
+          });
     });
   }
 
@@ -93,6 +103,18 @@ export class RegisterComponent implements OnInit {
     this.tokenStorage.saveUser(response.userInfo);
     this.router.navigateByUrl('/dashboard');
     this.snackBarService.openSnackBar(response.message, '');
+  }
+
+  /**
+   * Function to open change password component.
+   * 
+   */
+   changePassword(user){
+    this.dialog.open(ChangePasswordComponent, {
+      width: '400px',
+      data: user,
+      disableClose: true 
+    });
   }
 
 }

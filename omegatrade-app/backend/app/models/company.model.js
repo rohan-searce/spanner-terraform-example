@@ -55,11 +55,19 @@ Company.createStockData = async function (stockData) {
     return database.table('companyStocks').insert(stockData)
 };
 
+Company.deleteStockData = async function (companyId) {
+    const [rowCount] = await database.runPartitionedUpdate({
+        sql: 'DELETE FROM companyStocks WHERE companyId = @companyId',
+        params: { companyId: companyId }
+    });
+    return rowCount;
+}
+
 Company.getCompanySimulation = async function (companyId) {
     const fields = `companies.companyId,companies.companyName,companies.companyShortCode,simulations.status,simulations.sId`
     const query = `SELECT ${fields}  
         FROM companies 
-        LEFT JOIN simulations ON companies.companyId = simulations.companyId
+        INNER JOIN simulations ON companies.companyId = simulations.companyId
         WHERE companies.companyId = @companyId 
         ORDER BY simulations.createdAt DESC
         LIMIT 1`

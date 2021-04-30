@@ -53,7 +53,8 @@ exports.deleteSimulation = async function (req, res) {
         const sId = req.params.sId;
         const companyId = req.params.companyId;
         if (sId && companyId) {
-            await Simulation.deleteById([companyId,sId])
+            await Simulation.deleteById(sId)
+            await Company.deleteStockData(companyId);
             return res.status(200).json({ success: true, message: 'deleted successfully' });
         }
         else {
@@ -97,7 +98,7 @@ exports.startSimulation = async function (req, res) {
                     volume: spannerNumericRandValBetween(2000, 4000),
                     timestamp: 'spanner.commit_timestamp()'
                 };
-                const [simulation] = await Simulation.findOne(body.companyId, sId);
+                const [simulation] = await Simulation.findById(sId);
 
                 // check the existance of simulation and status is PROCESSING
                 if (!simulation) {

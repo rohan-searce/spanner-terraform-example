@@ -8,31 +8,18 @@ Simulation.getAll = async function () {
         sql: `SELECT sml.sId as sId,sml.companyId as companyId, sml.status as status, cy.companyName as companyName, cy.companyShortCode as companyShortCode FROM simulations sml 
               LEFT JOIN companies cy ON sml.companyId = cy.companyId 
               ORDER BY sml.createdAt DESC
-              LIMIT 3`,
+              `,
         json: true
     });
     return result;
 }
 
-Simulation.findById = async function (param) {
-    const sId = param.sId
-    const [result] = await database.run({
-        sql: 'SELECT sId,companyId,status FROM simulations WHERE sId = @sId',
-        params: {
-            sId: sId
-        },
-        json: true
-    });
-    return result;
-}
-
-Simulation.findOne = async function (companyId, sId) {
+Simulation.findById = async function (sId) {
     const [result] = await database.run({
         sql: `SELECT sId,companyId,status 
-              FROM simulations 
-              WHERE companyId = @companyId AND sId = @sId`,
+        FROM simulations 
+        WHERE sId = @sId`,
         params: {
-            companyId: companyId,
             sId: sId
         },
         json: true
@@ -51,8 +38,8 @@ Simulation.create = async function (companyId) {
     return sId;
 };
 
-Simulation.deleteById = async function (rows) {
-    return await database.table('simulations').deleteRows([rows]);
+Simulation.deleteById = async function (sId) {
+    return await database.table('simulations').deleteRows([sId]);
 }
 
 Simulation.update = async function (simulation) {

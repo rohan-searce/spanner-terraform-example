@@ -69,35 +69,69 @@ exports.login = async function (req, res) {
 };
 
 /**
- * Function to generate JWT token
+ * Function to verify and link Google user if user already exists,
+ * else store a new user in users table with random password. 
  * @method POST
  * 
- * @param {*} req contains request headers and payload businessEmail,password
+ * @param {*} req contains request headers and payload businessEmail,password,provider,photoUrl
  */
-exports.getToken = async function (req, res) {
+exports.googleSignIn = async function (req, res) {
     try {
         const body = req.body;
-        if (body && body.provider === 'GOOGLE') {
-            const [user] = await User.findUser(body.email)
-            if (user && user.userId) {
-                delete user.password;
-                if (user.provider === '' || user.provider === null) {
-                    user.provider = body.provider;
-                    user.photoUrl = body.photoUrl;
-                    await User.update(user)
-                }else if(user.provider !== 'GOOGLE'){
-                    return res.status(422).json({ success: false, message: 'The user is not a Google user.' });
+        const [user] = await User.findUser(body.email)
+        if (user && user.userId) {
+            // updating provider and photoUrl only if user did not registered with goolge before
+            if (user.provider === '' || user.provider === null) {
+                user.provider = body.provider;
+                user.photoUrl = body.photoUrl;
+                await User.update(user)
+            } 
+            const token = jwt.sign(user, process.env.JWT_KEY, {
+                expiresIn: process.env.EXPIRE_IN
+            });
+            return res.status(200).json({ success: true, message: 'Logged in successfully', userInfo: user, authToken: token });
+        } else {
+            const salt = await bcrypt.genSalt(10);
+            // generating random password as password field should not empty.
+            const randomPassword = Math.random().toString(36).slice(-8);
+            const password = await bcrypt.hash(randomPassword, salt);
+            const user = {
+                userId: uuidv4(),
+                businessEmail: body.email,
+                fullName: body.name,
+                password: password,
+                photoUrl: body.photoUrl,
+                provider: body.provider,
+            };
+            await User.registerUser(user);
+            jwt.sign(user, process.env.JWT_KEY, { expiresIn: process.env.EXPIRE_IN }, function (err, token) {
+                if (err) {
+                    return res.status(409).json({ success: false, message: 'Something went wrong while registering new user!' });
                 }
-                const token = jwt.sign(user, process.env.JWT_KEY, {
-                    expiresIn: process.env.EXPIRE_IN
-                });
-                return res.status(200).json({ success: true, message: 'Logged in successfully', userInfo: user, authToken: token });
-            } else {
-                return res.status(401).json({ success: false, message: 'Please register your account', redirect: 'sign-up' });
-            }
+                return res.status(200).json({ success: true, message: 'Registered successfully!', forceChangePassword: true, userInfo: user, authToken: token });
+            });
         }
+        
     } catch (error) {
-        logService.writeLog('user.controller.getToken', error);
+        logService.writeLog('user.controller.googleSignIn', error);
         return res.status(500).json({ success: false, message: 'Something went wrong,error while authenticating user!' });
     }
 };
+
+exports.changePassword = async function (req, res) {
+    try {
+        const body = req.body;
+        const [user] = await User.findById(body.userId)
+        if (user) {
+            const salt = await bcrypt.genSalt(10);
+            user.password = await bcrypt.hash(body.password, salt);
+            await User.update(user)
+            return res.status(200).json({ success: true, message: 'Password changed successfully' });
+        } else {
+            return res.json({ success: false, message: 'Invalid data, please check details you have entered.' });
+        }
+    } catch (error) {
+        logService.writeLog('user.controller.changePassword', error);
+        return res.status(500).json({ success: false, message: 'Something went wrong,error while attempting to change password.' });
+    }
+}

@@ -24,6 +24,7 @@ import { HeaderComponent } from './components/header/header.component';
 import { ConfirmDialogComponent } from './components/confirm-dialog/confirm-dialog.component';
 import { StockDashboardComponent } from './components/stock-dashboard/stock-dashboard.component';
 import { environment } from 'src/environments/environment';
+import { ChangePasswordComponent } from './components/change-password/change-password.component';
 
 
 
@@ -39,7 +40,8 @@ import { environment } from 'src/environments/environment';
     SimulationComponent,
     HeaderComponent,
     ConfirmDialogComponent,
-    StockDashboardComponent
+    StockDashboardComponent,
+    ChangePasswordComponent
   ],
   entryComponents: [
   ],

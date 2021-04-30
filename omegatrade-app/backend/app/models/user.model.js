@@ -18,7 +18,16 @@ User.findUser = async function (email) {
 }
 
 User.update = async function (userObj) {
-  return database.table('users').update([userObj]);
+  return await database.table('users').update([userObj]);
+}
+
+User.findById = async function(userId){
+  const [user] = await database.table('users').read({
+    columns: ['userId', 'fullName', 'businessEmail', 'photoUrl', 'provider'],
+    keys: [userId],
+    json: true
+  });
+  return user;
 }
 
 module.exports = User

@@ -67,6 +67,7 @@ export class StockDashboardComponent implements OnInit , OnDestroy{
   getStockData() {
     if (this.selectedCompany) {
       this.loader = true;
+      this.stock = new StockChart({});
       this.restService.getData(`companies/dashboard/${this.selectedCompany}`)
         .pipe(take(1))
         .subscribe(
@@ -152,7 +153,7 @@ export class StockDashboardComponent implements OnInit , OnDestroy{
             if (response && response.success) {
               const data = response.data.stocks;
               const company = response.data.company;
-              if (company.status == 'COMPLETED' || company.status === null) {
+              if (company && company.status == 'COMPLETED' || company.status === null) {
                   // Canceling subscription when simulation completed
                   this.clearAllTimeOuts()
               } else {

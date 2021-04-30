@@ -7,6 +7,8 @@ import { TokenStorageService } from '../../services/token-storage.service';
 import { SocialAuthService } from 'angularx-social-login';
 import { GoogleLoginProvider } from 'angularx-social-login';
 import { SnackBarService } from '../../services/snackbar.service';
+import { ChangePasswordComponent } from '../change-password/change-password.component';
+import { MatDialog } from '@angular/material/dialog';
 import { take } from "rxjs/operators";
 
 @Component({
@@ -17,10 +19,9 @@ import { take } from "rxjs/operators";
 export class LoginComponent implements OnInit {
     loginForm: any;
     loader = false;
-    user: any;
     
     // tslint:disable-next-line: max-line-length
-    constructor(private snackBarService: SnackBarService, private tokenStorage: TokenStorageService, private authService: SocialAuthService, private restService: RestService, private formBuilder: FormBuilder, private router: Router) {
+    constructor(private snackBarService: SnackBarService, private tokenStorage: TokenStorageService, private authService: SocialAuthService, private restService: RestService, private formBuilder: FormBuilder, private router: Router, private dialog: MatDialog) {
         this.loginForm = this.formBuilder.group({
             businessEmail: ['', [Validators.required, ValidationService.emailValidator]],
             password: ['', [Validators.required]]
@@ -39,12 +40,16 @@ export class LoginComponent implements OnInit {
     signInWithGoogle(): void {
         this.authService.signIn(GoogleLoginProvider.PROVIDER_ID).then(user => {
             this.loader = true;
-            this.restService.postData('users/get-auth-token', user)
+            this.restService.postData('users/google-sign-in', user)
                 .pipe(take(1))
                 .subscribe(
                     response => {
                         if (response && response.success) {
                             this.tokenSuccessHandler(response);
+                            const forceChangePassword = response.forceChangePassword;
+                            if(forceChangePassword === true){
+                                this.changePassword({...response.userInfo,forceChangePassword})
+                            }
                         }
                         this.loader = false;
                     },
@@ -90,6 +95,18 @@ export class LoginComponent implements OnInit {
          this.router.navigateByUrl('/dashboard');
         this.snackBarService.openSnackBar(response.message, '');
     }
+
+   /**
+   * Function to open change password component.
+   * 
+   */
+  changePassword(user){
+    this.dialog.open(ChangePasswordComponent, {
+      width: '400px',
+      data: user,
+      disableClose: true 
+    });
+  }
 }
 
 

@@ -2,6 +2,7 @@
 const Company = require('../models/company.model')
 const logService = require('../helpers/logservice');
 const { v4: uuidv4 } = require('uuid');
+const Simulation = require('../models/simulation.model');
 
 /**
  * Function to list all companies
@@ -73,8 +74,13 @@ exports.update = async function (req, res) {
 exports.delete = async function (req, res) {
     try {
         const companyId = req.params.companyId;
-        await Company.delete(companyId);
-        res.status(200).json({ success: true, message: "company deleted!" });
+        const simulations = await Company.getCompanySimulation(companyId);
+        if (simulations && simulations.length > 0) {
+            return res.status(500).json({ success: false, message: `Deletion Failed!, please delete simulation of company - ${simulations[0].companyName} first.` });
+        } else {
+            await Company.delete(companyId);
+            return res.status(200).json({ success: true, message: "company deleted!" });
+        }
     } catch (error) {
         logService.writeLog('company.controller.delete', error);
         return res.status(500).json({ success: false, message: "Something went wrong while deleting a company." });
