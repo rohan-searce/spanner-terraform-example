@@ -16,7 +16,7 @@ exports.register = async function (req, res) {
         const body = req.body;
         const [registerUser] = await User.findUser(body.businessEmail);
         if (registerUser && registerUser.userId) {
-            return res.status(400).json({ success: false, message: 'Registration failed, Email already exists!' });
+            return res.status(409).json({ success: false, message: 'Registration failed, Email already exists!' });
         }
         const salt = await bcrypt.genSalt(10);
         const password = await bcrypt.hash(body.password, salt);
@@ -29,7 +29,7 @@ exports.register = async function (req, res) {
         await User.registerUser({ ...user, password });
         jwt.sign(user, process.env.JWT_KEY, { expiresIn: process.env.EXPIRE_IN }, function (err, token) {
             if (err) {
-                return res.status(409).json({ success: false, message: 'Something went wrong while registering new user!' });
+                return res.status(500).json({ success: false, message: 'Something went wrong while registering new user!' });
             }
             return res.status(200).json({ success: true, message: 'Registered successfully!', userInfo: user, authToken: token });
         });
@@ -106,7 +106,7 @@ exports.googleSignIn = async function (req, res) {
             await User.registerUser(user);
             jwt.sign(user, process.env.JWT_KEY, { expiresIn: process.env.EXPIRE_IN }, function (err, token) {
                 if (err) {
-                    return res.status(409).json({ success: false, message: 'Something went wrong while registering new user!' });
+                    return res.status(500).json({ success: false, message: 'Something went wrong while registering new user!' });
                 }
                 return res.status(200).json({ success: true, message: 'Registered successfully!', forceChangePassword: true, userInfo: user, authToken: token });
             });
