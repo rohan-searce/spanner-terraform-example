@@ -51,7 +51,7 @@ variable "labels_var" {
 variable "ddl_queries" {
   type = list(string)
   default = [
-    "CREATE TABLE users ( userId STRING(36) NOT NULL, businessEmail STRING(50), fullName STRING(36), password STRING(100), photoUrl STRING(250), provider STRING(20),) PRIMARY KEY(userId)",
+    "CREATE TABLE users ( userId STRING(36) NOT NULL, businessEmail STRING(50), fullName STRING(36), password STRING(100), photoUrl STRING(250), provider STRING(20), forceChangePassword BOOL) PRIMARY KEY(userId)",
     "CREATE UNIQUE NULL_FILTERED INDEX usersByBusinessEmail ON users (businessEmail)",
     "CREATE TABLE companies (companyId STRING(36) NOT NULL, companyName STRING(30), companyShortCode STRING(15), created_at TIMESTAMP NOT NULL OPTIONS (allow_commit_timestamp = true), ) PRIMARY KEY(companyId)",
     "CREATE UNIQUE NULL_FILTERED INDEX companiesByCompanyName ON companies (companyName)",
