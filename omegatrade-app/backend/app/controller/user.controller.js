@@ -80,7 +80,7 @@ exports.googleSignIn = async function (req, res) {
         const body = req.body;
         const [user] = await User.findUser(body.email)
         if (user && user.userId) {
-            // updating provider and photoUrl only if user did not registered with goolge before
+            // updating provider and photoUrl only if user did not registered with Google before
             if (user.provider === '' || user.provider === null) {
                 user.provider = body.provider;
                 user.photoUrl = body.photoUrl;
