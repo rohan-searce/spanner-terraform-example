@@ -185,7 +185,6 @@ export class SimulationComponent implements OnInit {
   * @param sId {string} unique simulation id
   * @param status  using three types of simulation status.
   * PROCESSING - simulation is running.
-  * STOPPED - simulation stopped.
   * COMPLETED - simulation completed for particular company.
   */
   updateSimulation(sId,companyId,status) {

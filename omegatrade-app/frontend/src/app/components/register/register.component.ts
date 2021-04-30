@@ -27,8 +27,8 @@ export class RegisterComponent implements OnInit {
     this.signUpForm = this.formBuilder.group({
       fullName: ['', [Validators.required]],
       businessEmail: ['', [Validators.required, ValidationService.emailValidator]],
-      password: ['', [Validators.required]],
-      confirmPassword: ['', [Validators.required]],
+      password: ['', [Validators.required, Validators.minLength(6)]],
+      confirmPassword: ['', [Validators.required, Validators.minLength(6)]],
       provider: [''],
       photoUrl: ['']
     });

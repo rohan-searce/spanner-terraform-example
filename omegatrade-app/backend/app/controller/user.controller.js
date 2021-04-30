@@ -57,10 +57,10 @@ exports.login = async function (req, res) {
                 });
                 return res.status(200).json({ success: true, message: 'Logged in successfully', userInfo: user, authToken: token });
             } else {
-                return res.status(401).json({ success: false, message: 'Login failed.' });
+                return res.status(409).json({ success: false, message: 'Login failed.' });
             }
         } else {
-            return res.status(401).json({ success: false, message: 'Please register your account before login!' });
+            return res.status(409).json({ success: false, message: 'Please register your account before login!' });
         }
     } catch (error) {
         logService.writeLog('user.controller.login', error);
@@ -69,7 +69,7 @@ exports.login = async function (req, res) {
 };
 
 /**
- * Function to verify and link Google user if user already exists,
+ * Function to verify and link Google-User if user already exists,
  * else store a new user in users table with random password. 
  * @method POST
  * 
@@ -93,7 +93,7 @@ exports.googleSignIn = async function (req, res) {
         } else {
             const salt = await bcrypt.genSalt(10);
             // generating random password as password field should not empty.
-            const randomPassword = Math.random().toString(36).slice(-8);
+            const randomPassword = Math.random().toString(36).slice(-6);
             const password = await bcrypt.hash(randomPassword, salt);
             const user = {
                 userId: uuidv4(),

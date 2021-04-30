@@ -21,8 +21,8 @@ export class ChangePasswordComponent implements OnInit {
     this.userForm = this.formBuilder.group({
       userId: ['', []],
       businessEmail: ['', [Validators.required]],
-      password: ['', [Validators.required]],
-      confirmPassword: ['', [Validators.required]],
+      password: ['', [Validators.required, Validators.minLength(6)]],
+      confirmPassword: ['', [Validators.required, Validators.minLength(6)]],
     },{validators: ValidationService.checkPasswords.bind(this)});
     if (data && data.userId) {
       this.userForm.setValue({
