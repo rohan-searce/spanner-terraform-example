@@ -6,7 +6,7 @@ const Simulation = function () { };
 Simulation.getAll = async function () {
     const [result] = await database.run({
         sql: `SELECT sml.sId as sId,sml.companyId as companyId, sml.status as status, cy.companyName as companyName, cy.companyShortCode as companyShortCode FROM simulations sml 
-              LEFT JOIN companies cy ON sml.companyId = cy.companyId 
+              INNER JOIN companies cy ON sml.companyId = cy.companyId 
               ORDER BY sml.createdAt DESC
               `,
         json: true
