@@ -31,3 +31,4 @@ COPY . ./
 COPY --from=static-emulator-source ./gateway_main ./emulator_main ./
 RUN chmod u+x ddl.sh start.sh gateway_main emulator_main
 ENTRYPOINT ["/tini", "--", "./start.sh"]
+

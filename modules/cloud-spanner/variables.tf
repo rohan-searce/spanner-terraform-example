@@ -61,7 +61,6 @@ variable "ddl_queries" {
   ]
   description = "An optional list of DDL statements to run inside the newly created database. Statements can create tables, indexes, etc."
 }
-
 variable "deletion_protection" {
   type        = bool
   default     = false

@@ -1,6 +1,5 @@
 @import '~@angular/material/prebuilt-themes/indigo-pink.css';
 @import 'https://fonts.googleapis.com/css?family=Dosis:400,600';
-
 /* You can add global styles to this file, and also import other style files */
 body{background: #eee;}
 .mt-10{margin-top: 10px;}
