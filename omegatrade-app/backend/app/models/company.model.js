@@ -1,196 +1,100 @@
 'user strict';
 const database = require('./../config/database.js');
-const {
-    v4: uuidv4
-} = require('uuid');
-var Company = function (company) {};
+const Company = function () { };
 
-Company.getAll = async function (cb) {
-    try {
-        const query = {
-            sql: 'select * from companies',
-        };
-        let result = await database.run(query);
-        if (result[0]) {
-            var rows = result[0].map((row) => row.toJSON());
-            cb(null, rows)
-        } else {
-            cb(null, null);
-        }
-    } catch (error) {
-        cb(error, null)
-    }
+Company.getAll = async function () {
+    const [companies] = await database.run({
+        sql: `SELECT companyId , companyName , companyShortCode , created_at 
+              FROM companies`,
+        json: true,
+    });
+    return companies;
 }
 
-Company.getCompanyStock = async function (param, cb) {
-    try {
-        let companyId = param.companyId
-        let response = {}
-        const query = {
-            sql: 'select * from companies where companyId = @companyId',
-            params: {
-                companyId: companyId
-            }
-        };
-        let result = await database.run(query);
-        if (result[0]) {
-            var rows = result[0].map((row) => row.toJSON());
-            response.company = rows[0];
-        }
-        if (param.date) {
-            var whereClause = 'where companyId = @companyId and date > @date ORDER BY date';
-            var params = {
-                companyId: companyId,
-                date: param.date
-            };
-        } else {
-            var whereClause = 'where companyId = @companyId ORDER BY date';
-            var params = {
-                companyId: companyId
-            }
-        }
-        var query2 = {
-            sql: 'select date,currentValue from companyStocks ' + whereClause,
-            params: params
-        };
-        let stockResult = await database.run(query2);
-        if (stockResult[0]) {
-            var stockRows = stockResult[0].map((row) => row.toJSON());
-            response.stocks = stockRows;
-        }
-        cb(null, response)
-    } catch (error) {
-        cb(error, null)
-    }
+Company.create = async function (companyObj) {
+    await database.table('companies').insert(companyObj);
+    return companyObj.companyId
 };
 
-Company.create = async function (params, result) {
-    try {
-        params.companyId = uuidv4();
-        params.created_at = 'spanner.commit_timestamp()';
-        await database.table('companies').insert(params);
-        result(null, params.companyId);
-    } catch (error) {
-        result(true, null);
-    }
+Company.checkCompany = async function (companyName, companyShortCode) {
+    const company = await database.run({
+        sql: `SELECT companyName , companyShortCode 
+              FROM companies 
+              WHERE companyName = @companyName OR companyShortCode = @companyShortCode 
+              LIMIT 1`,
+        params: {
+            companyName: companyName,
+            companyShortCode: companyShortCode
+        },
+        json: true
+    });
+    return company;
 };
 
-Company.createData = async function (params, result) {
-    try {
-        let companyId = uuidv4();
-        await database.table('companies').insert({
-            "companyName": params.name,
-            "companyShortCode": params.symbol,
-            "companyId": companyId,
-            "created_at": 'spanner.commit_timestamp()'
-        })
-        result(null, companyId)
-    } catch (error) {
-        result(true, null)
-    }
-};
+Company.delete = async function (companyId) {
+    return await database.table('companies').deleteRows([companyId]);
+}
 
-Company.createStockData = async function (stockData, result) {
-    try {
-        await database.table('companyStocks').insert(stockData)
-        result(null, true);
-    } catch (error) {
-        console.log('stockDataErr', error)
-        result(error, false);
-    }
-};
+Company.update = async function (companyObj) {
+    return await database.table('companies').update([companyObj]);
+}
 
-Company.getCompany = async function (companyId, cb) {
-    console.log(companyId)
-    try {
-        const query = {
-            sql: 'select * from companies where companyId = @companyId',
-            params: {
-                companyId: companyId
-            }
-        };
-        let result = await database.run(query);
-        if (result[0]) {
-            var rows = result[0].map((row) => row.toJSON());
-            cb(null, rows)
-        } else {
-            cb(null, null);
-        }
-    } catch (error) {
-        console.log('issue', error)
-        cb(error, null)
-    }
-};
-
-Company.checkCompany = async function (param) {
-    companyName = param.companyName;
-    companyShortCode = param.companyShortCode;
-    try {
-        const query = {
-            sql: 'select * from companies where companyName = @companyName or companyShortCode = @companyShortCode',
-            params: {
-                companyName: companyName,
-                companyShortCode:companyShortCode
-            }
-        };
-        let result = await database.run(query);
-        console.log(result);
-        if (result[0]) {
-            var data = result[0].map((row) => row.toJSON());
-            return {status:true,data:data}
-        } 
-    } catch (error) {
-        return {status:false}
-    }
-};
-
-Company.delete = async function (companyId, cb) {
-    database.runTransaction(async (err, transaction) => {
-        if (err) {
-            cb(err, null)
-            return;
-        }
-        try {
-            const [rowCount] = await transaction.runUpdate({
-                sql: "DELETE FROM companies WHERE companyId = @companyId",
-                params: {
-                    companyId: companyId
-                },
-            });
-            console.log(`Successfully deleted ${rowCount} record.`);
-            await transaction.commit();
-            cb(null, true)
-        } catch (err) {
-            console.error('ERROR:', err);
-            cb(err, null)
-        }
+Company.findById = async function (companyId) {
+    return await database.run({
+        sql: `SELECT companyId , companyName , companyShortCode , created_at  
+              FROM companies 
+              WHERE companyId = @companyId`,
+        params: {
+            companyId: companyId,
+        },
+        json: true
     });
 }
-Company.update = async function (params, cb) {
-    const table = database.table('companies');
-    try {
-        await table.update([params]);
-        cb(null, true)
-    } catch (err) {
-        cb(err, null)
-    }
+
+Company.createStockData = async function (stockData) {
+    return database.table('companyStocks').insert(stockData)
+};
+
+Company.deleteStockData = async function (companyId) {
+    const [rowCount] = await database.runPartitionedUpdate({
+        sql: 'DELETE FROM companyStocks WHERE companyId = @companyId',
+        params: { companyId: companyId }
+    });
+    return rowCount;
 }
 
-Company.getAllStocks = async function (cb) {
-    try {
-        const query = {
-            sql: 'select * from companyStocks',
-        };
-        let result = await database.run(query);
-        if (result[0]) {
-            var rows = result[0].map((row) => row.toJSON());
-            cb(null, rows)
-        } else {
-            cb(null, null);
-        }
-    } catch (error) {
-        cb(error, null)
+Company.getCompanySimulation = async function (companyId) {
+    const fields = `companies.companyId,companies.companyName,companies.companyShortCode,simulations.status,simulations.sId`
+    const query = `SELECT ${fields}  
+        FROM companies 
+        INNER JOIN simulations ON companies.companyId = simulations.companyId
+        WHERE companies.companyId = @companyId 
+        ORDER BY simulations.createdAt DESC
+        LIMIT 1`
+    const [result] = await database.run({
+        sql: query,
+        params: { companyId: companyId },
+        json: true
+    });
+    return result;
+};
+
+Company.getStocks = async function (companyId, date = null) {
+    const conditions = ['companyId = @companyId'];
+    const values = { companyId: companyId };
+    if (date) {
+        conditions.push('date > @date');
+        values.date = date;
     }
+    const [stockResult] = await database.run({
+        sql: `SELECT date , currentValue 
+                  FROM companyStocks  
+                  WHERE  ${conditions.join(' AND ')}  
+                  ORDER BY date`,
+        params: values,
+        json: true
+    });
+    return stockResult;
 }
 
 module.exports = Company
