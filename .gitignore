@@ -34,7 +34,7 @@
 /backend/nodejs-spanner
 /backend/fakedata.js
 /omegatrade-app/frontend/dist/
-
+/omegatrade-app/backend/.env
 
 # profiling files
 chrome-profiler-events.json
