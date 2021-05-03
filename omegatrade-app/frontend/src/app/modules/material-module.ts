@@ -19,6 +19,8 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatSortModule } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatIconModule } from '@angular/material/icon';
 import { OverlayModule } from '@angular/cdk/overlay';
 
 @NgModule({
@@ -42,6 +44,8 @@ import { OverlayModule } from '@angular/cdk/overlay';
     MatSortModule,
     MatTableModule,
     MatTooltipModule,
+    MatMenuModule,
+    MatIconModule,
     OverlayModule,
     PortalModule,
   ]

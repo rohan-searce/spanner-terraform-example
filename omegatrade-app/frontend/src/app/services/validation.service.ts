@@ -1,8 +1,11 @@
+import { FormGroup } from '@angular/forms';
 export class ValidationService {
     static getValidatorErrorMessage(validatorName: string, validatorValue?: any): object {
       const config = {
         required: 'Required',
         invalidEmailAddress: 'Invalid email address',
+        invalidPassword: 'Invalid password. Password must be at least 6 characters long, and contain a number.',
+        passwordNotMatch: 'Password and confirm password fields not matched.',
         minlength: `Minimum length ${validatorValue.requiredLength}`
       };
       return config[validatorName];
@@ -23,6 +26,14 @@ export class ValidationService {
       } else {
         return { invalidPassword: true };
       }
+    }
+
+    static checkPasswords(group: FormGroup) { 
+      let password = group.controls.password.value;
+      let confirmPassword = group.controls.confirmPassword.value;
+      if(password && confirmPassword)
+        return password === confirmPassword ? null : { passwordNotMatch : true };
+      return null;  
     }
   }
   

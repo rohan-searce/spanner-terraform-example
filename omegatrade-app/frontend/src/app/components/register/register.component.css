@@ -100,3 +100,10 @@ input::placeholder {
 .google-logo{
     margin-right:5px;
 }
+
+.error-message {
+	color: red;
+	font-size: 11px;
+	margin-top: 2px;
+	display: block;
+}

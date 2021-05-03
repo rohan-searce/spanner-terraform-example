@@ -4,6 +4,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
+import { ChartModule } from 'angular-highcharts';
 import { LoginComponent } from './components/login/login.component';
 import { ValidationService } from './services/validation.service';
 import { ControlMessagesComponent } from './components/control-messages/control-messages.component';
@@ -15,6 +16,15 @@ import { TokenStorageService } from './services/token-storage.service';
 import { SocialLoginModule, SocialAuthServiceConfig } from 'angularx-social-login';
 import { GoogleLoginProvider } from 'angularx-social-login';
 import { HttpConfigInterceptor} from './interceptor/httpconfig.interceptor';
+import { ManageCompanyComponent } from './components/company/manage-company/manage-company.component';
+import { UpdateCompanyComponent } from './components/company/update-company/update-company.component';
+import { SidebarComponent } from './components/sidebar/sidebar.component';
+import { SimulationComponent } from './components/simulation/simulation.component';
+import { HeaderComponent } from './components/header/header.component';
+import { ConfirmDialogComponent } from './components/confirm-dialog/confirm-dialog.component';
+import { StockDashboardComponent } from './components/stock-dashboard/stock-dashboard.component';
+import { environment } from 'src/environments/environment';
+import { ChangePasswordComponent } from './components/change-password/change-password.component';
 
 
 
@@ -23,7 +33,15 @@ import { HttpConfigInterceptor} from './interceptor/httpconfig.interceptor';
     AppComponent,
     LoginComponent,
     ControlMessagesComponent,
-    RegisterComponent
+    RegisterComponent,
+    ManageCompanyComponent,
+    UpdateCompanyComponent,
+    SidebarComponent,
+    SimulationComponent,
+    HeaderComponent,
+    ConfirmDialogComponent,
+    StockDashboardComponent,
+    ChangePasswordComponent
   ],
   entryComponents: [
   ],
@@ -35,7 +53,8 @@ import { HttpConfigInterceptor} from './interceptor/httpconfig.interceptor';
     BrowserAnimationsModule,
     MaterialModule,
     HttpClientModule,
-    SocialLoginModule
+    SocialLoginModule,
+    ChartModule,
   ],
   exports: [ControlMessagesComponent],
   providers: [ValidationService, AuthGuardService, TokenStorageService,
@@ -48,7 +67,7 @@ import { HttpConfigInterceptor} from './interceptor/httpconfig.interceptor';
           {
             id: GoogleLoginProvider.PROVIDER_ID,
             provider: new GoogleLoginProvider(
-              '427907482591-qgi5lvlh5ntt8t7uqn2ctb3blq7j3sgr.apps.googleusercontent.com'
+              environment.clientId
             )
           }
         ]

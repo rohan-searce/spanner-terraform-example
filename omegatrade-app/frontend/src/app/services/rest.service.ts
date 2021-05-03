@@ -71,6 +71,7 @@ export class RestService {
     handleError(error: HttpErrorResponse): any {
         if (error.status === 401 && error.statusText === 'Unauthorized') {
             window.sessionStorage.removeItem('userInfo');
+            window.sessionStorage.removeItem('authToken');
         }
         return throwError(error);
     }

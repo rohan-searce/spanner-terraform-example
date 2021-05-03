@@ -1,5 +1,8 @@
 export const environment = {
   production: false,
   name: "dev",
-  baseUrl:"http://localhost:3000/api/v1/"
+  // change baseUrl according to backend URL
+  baseUrl:"[your-backend-url]]/api/v1",
+  // change clientId to actual value you have received from Oauth console
+  clientId:"[enter-clientId]"
 };

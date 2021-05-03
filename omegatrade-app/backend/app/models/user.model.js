@@ -1,35 +1,33 @@
 'user strict';
 const database = require('./../config/database.js');
-var User = function () {};
+var User = function () { };
 
-User.registerUser = async function (user, cb) {
-  const usersTable = database.table('users');
-  try {
-    await usersTable.insert(user);
-    cb(null, true);
-    return true;
-  } catch (err) {
-    cb(err, null);
-    return;
-  } 
+User.registerUser = async function (user) {
+  return await database.table('users').insert(user);
 }
 
-User.findUser = async function (email, cb) {
-  try {
-    const query = {
-      sql: 'SELECT userId,fullName,businessEmail,password,photoUrl,provider FROM users where businessEmail = @businessEmail',
-      params: {
-        businessEmail: email
-      },
-      json: true,
-    };
-    const [users] = await database.run(query);
-    cb(null,users[0]);
-    return;
-  } catch (error) {
-    cb(error, null)
-    return;
-  }
+User.findUser = async function (email) {
+  const [user] = await database.run({
+    sql: 'SELECT userId, fullName, businessEmail, password, photoUrl, provider FROM users WHERE businessEmail = @businessEmail',
+    params: {
+      businessEmail: email
+    },
+    json: true,
+  });
+  return user;
+}
+
+User.update = async function (userObj) {
+  return await database.table('users').update([userObj]);
+}
+
+User.findById = async function(userId){
+  const [user] = await database.table('users').read({
+    columns: ['userId', 'fullName', 'businessEmail', 'photoUrl', 'provider'],
+    keys: [userId],
+    json: true
+  });
+  return user;
 }
 
 module.exports = User
