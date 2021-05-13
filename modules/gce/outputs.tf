@@ -14,7 +14,7 @@ output "instance_id" {
 }
 
 output "self_link" {
-  value       = google_compute_address.omege_trade_static_ip.self_link
+  value       = google_compute_address.omega_trade_static_ip.self_link
   description = "The URI of the External Static IP resource."
 }
 
@@ -29,6 +29,6 @@ output "sa_id" {
 }
 
 output "region" {
-  value       = var.region
+  value       = data.google_client_config.google_client.region
   description = "GCP Region in which GCE VM Instance being created"
 }

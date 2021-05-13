@@ -17,3 +17,5 @@ RUN npm install
 COPY . ./
 RUN chmod u+x ddl.sh remote-start.sh
 ENTRYPOINT ["/tini", "--", "./remote-start.sh"]
+
+

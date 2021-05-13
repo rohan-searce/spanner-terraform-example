@@ -25,11 +25,10 @@ ENV SPANNER_EMULATOR_HOST="localhost:9010"
 
 # Application 
 WORKDIR /usr/src/app
-RUN ls -la
-RUN pwd
-COPY package*.json ./
+ADD ./package.json ./
 RUN npm install
 COPY . ./
 COPY --from=static-emulator-source ./gateway_main ./emulator_main ./
 RUN chmod u+x ddl.sh start.sh gateway_main emulator_main
 ENTRYPOINT ["/tini", "--", "./start.sh"]
+
